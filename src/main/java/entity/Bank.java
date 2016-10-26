@@ -3,12 +3,12 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package loanbroker.entity;
+package entity;
 
 /**
  *
  * @author Mathias
  */
-public class Message {
+public class Bank {
     
 }
