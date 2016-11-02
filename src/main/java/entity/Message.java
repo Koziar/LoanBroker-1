@@ -53,6 +53,11 @@ public class Message {
     public void setLoanDuration(int loanDuration) {
         this.loanDuration = loanDuration;
     }
+
+    @Override
+    public String toString() {
+        return "Message{" + "ssn=" + ssn + ", creditScore=" + creditScore + ", loanAmount=" + loanAmount + ", loanDuration=" + loanDuration + '}';
+    }
     
     
   

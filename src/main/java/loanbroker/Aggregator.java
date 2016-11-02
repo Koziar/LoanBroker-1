@@ -9,13 +9,10 @@ import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
 import com.rabbitmq.client.QueueingConsumer;
-import entity.Message;
-import java.io.IOException;
+import entity.Message; 
 import java.util.ArrayList;
 import java.util.concurrent.TimeoutException;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.Reader;
+import java.io.IOException; 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 /**
@@ -24,20 +21,24 @@ import com.google.gson.GsonBuilder;
  */
 public class Aggregator {
   private static final String hostName = "datdb.cphbusiness.dk";
-  private static final String queueName = "fireBug"; 
-  private  ArrayList<Message> messageList;
+  private static final String queueName = "fireBug";  
   private Message bestMessage;
    
   
-  
- public void main() throws Exception {
-		 
+    public static void main(String[] args) throws Exception {
+        // TODO code application logic here
+        ArrayList a = new ArrayList<Message>();
         Message m1 = new Message("1234567", 12212, 1222.0, 121);
-        messageList.add(m1);
-         
-        System.out.println(findSmallestLoan(messageList).ssn);
-  }
-  
+        a.add(m1);
+        Message m2 = new Message("1234568", 12212, 1222.0, 121);
+        a.add(m2); 
+        
+        Aggregator ag = new Aggregator();
+        System.out.println(ag.findSmallestLoan(a));
+        ag.send(ag.findSmallestLoan(a));
+        ag.recive();
+    }
+   
 
   
     private Message findSmallestLoan(ArrayList<Message> messages) throws Exception {
@@ -52,19 +53,12 @@ public class Aggregator {
                 bestMessage = i;
             }
             
-        });
-        messageList.removeAll(messageList);
+        }); 
 
 	 
      return bestMessage;
     }
-
-    private void addMessageToList(String ssn, int creditScore, double loanAmount, int loanDuration)
-    { 
-        Message m = new Message(ssn,creditScore,loanAmount,loanDuration);
-        messageList.add(m); 
-    }
-        
+  
     private void recive() throws IOException, TimeoutException, InterruptedException
     {
             //setting the connection to the RabbitMQ server
@@ -91,7 +85,7 @@ public class Aggregator {
               Gson gson = new GsonBuilder().create();
               Message fm = gson.fromJson(m, Message.class);
 	      System.out.println(" [x] Received '" + fm + "'");
-              addMessageToList(fm.ssn,fm.creditScore,fm.loanAmount,fm.loanDuration);
+              
 	    }
         
     
@@ -104,18 +98,16 @@ public class Aggregator {
         connfac.setUsername("student");
         connfac.setPassword("cph");
         Gson gson = new GsonBuilder().create();
-        findSmallestLoan(messageList);
+        
         String fm = gson.toJson(bestMessage);
         
         Connection connection = connfac.newConnection();
         Channel channel = connection.createChannel();
 
         channel.queueDeclare(queueName, false, false, false, null);
-          
-        for (int i = 0; i < 3; i++) {
-            channel.basicPublish("", queueName, null, fm.getBytes());
-        }
-        System.out.println(" [x] Sent '" + fm + "'");
+        channel.basicPublish("", queueName, null, fm.getBytes()); 
+        
+        System.out.println(" [x] Sent '" + fm.toString() + "'");
 
         channel.close();
         connection.close();
@@ -123,3 +115,4 @@ public class Aggregator {
     }
     
 }
+
