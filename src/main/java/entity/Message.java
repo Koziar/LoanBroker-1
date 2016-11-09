@@ -5,15 +5,18 @@
  */
 package entity;
 
+import java.util.ArrayList;
+
 /**
  *
  * @author Mathias
  */
 public class Message {
-    public String ssn;
-    public int creditScore;
-    public double loanAmount;
-    public int loanDuration;
+    private String ssn;
+    private int creditScore;
+    private double loanAmount;
+    private int loanDuration;
+    private ArrayList<Bank> banks;
 
     public Message(String ssn, int creditScore, double loanAmount, int loanDuration) {
         this.ssn = ssn;
@@ -57,6 +60,14 @@ public class Message {
     @Override
     public String toString() {
         return "Message{" + "ssn=" + ssn + ", creditScore=" + creditScore + ", loanAmount=" + loanAmount + ", loanDuration=" + loanDuration + '}';
+    }
+
+    public ArrayList<Bank> getBanks() {
+        return banks;
+    }
+
+    public void setBanks(ArrayList<Bank> banks) {
+        this.banks = banks;
     }
     
     
