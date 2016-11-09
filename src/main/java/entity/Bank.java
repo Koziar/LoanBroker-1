@@ -10,5 +10,27 @@ package entity;
  * @author Mathias
  */
 public class Bank {
-    
+
+    private int minimumCreditScore;
+    private String name;
+    private String routingKey;
+
+    public Bank(int minimumCreditScore, String name, String routingKey) {
+        this.minimumCreditScore = minimumCreditScore;
+        this.name = name;
+        this.routingKey = routingKey;
+    }
+
+    public int getMinimumCreditScore() {
+        return minimumCreditScore;
+    }
+
+    public String getRoutingKey() {
+        return routingKey;
+    }
+
+    public String getName() {
+        return name;
+    }
+
 }
