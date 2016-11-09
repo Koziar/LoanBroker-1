@@ -1,1 +1,31 @@
+# User-specific stuff:
+.idea/
+
+# Gradle:
+.idea/gradle.xml
+.idea/libraries
+
+# Mongo Explorer plugin:
+.idea/mongoSettings.xml
+
+## File-based project format:
+*.iws
+
+## Plugin-specific files:
+
+# IntelliJ
+/out/
+
+*.iml
+modules.xml
+.idea/misc.xml
+*.ipr
+
+# NetBeans #
+nbproject/private/
+build/
 /target/
+nbbuild/
+dist/
+nbdist/
+.nb-gradle/

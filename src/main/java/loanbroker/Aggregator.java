@@ -48,8 +48,8 @@ public class Aggregator {
         
         messages.forEach((i) -> 
         {
-            System.out.print(i.ssn);
-            if(i.creditScore > bestMessage.creditScore)
+            System.out.print(i.getSsn());
+            if(i.getCreditScore() > bestMessage.getCreditScore())
             {
                 bestMessage = i;
             }
