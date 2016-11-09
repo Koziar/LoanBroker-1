@@ -2,16 +2,16 @@
 
 #Opgaver
 ## Nikolai
-RecipientList
+RecipientList,
 Translator (1)
 ## Jonathan
-Normalizer
+Normalizer,
 Bank (Soap)
 ## Joachim
-Aggregator
+Aggregator,
 Get creditscore (Webservice)
 ## Mathias
-GetBanks
+GetBanks,
 Bank (Rabbit)
 
 
