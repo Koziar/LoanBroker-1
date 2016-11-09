@@ -2,10 +2,21 @@
 
 #Opgaver
 ## Nikolai
-RecipientList
+RecipientList,
+Translator (1)
 ## Jonathan
-Normalizer
+Normalizer,
+Bank (Soap)
 ## Joachim
-Aggregator
+Aggregator,
+Get creditscore (Webservice)
 ## Mathias
-GetBanks
+GetBanks,
+Bank (Rabbit)
+
+
+Ikke tildelt
+- Translator (2)
+- Translator (3)
+- Translator (4)  
+- Documentation
