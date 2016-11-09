@@ -10,13 +10,17 @@ package entity;
  * @author Mathias
  */
 public class Bank {
-    
+
     private String id;
     private int minimumCreditScore;
+    private String name;
+    private String routingKey;
 
-    public Bank(String id, int minimumCreditScore) {
+    public Bank(String id, int minimumCreditScore, String name, String routingKey) {
         this.id = id;
         this.minimumCreditScore = minimumCreditScore;
+        this.name = name;
+        this.routingKey = routingKey;
     }
 
     public String getId() {
@@ -26,4 +30,13 @@ public class Bank {
     public int getMinimumCreditScore() {
         return minimumCreditScore;
     }
+
+    public String getRoutingKey() {
+        return routingKey;
+    }
+
+    public String getName() {
+        return name;
+    }
+
 }
