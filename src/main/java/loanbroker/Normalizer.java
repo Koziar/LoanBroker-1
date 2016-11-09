@@ -9,23 +9,12 @@ import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
 import com.rabbitmq.client.QueueingConsumer;
+import config.RoutingKeys;
 import entity.LoanResponse;
 import java.io.IOException;
 import java.io.StringReader;
 import java.util.concurrent.TimeoutException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.xml.bind.JAXB;
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Unmarshaller;
-import javax.xml.xpath.XPath;
-import javax.xml.xpath.XPathConstants;
-import javax.xml.xpath.XPathExpressionException;
-import javax.xml.xpath.XPathFactory;
-import jdk.internal.org.xml.sax.InputSource;
-import jdk.nashorn.internal.parser.JSONParser;
-import org.json.JSONArray;
 import org.json.JSONObject;
 
 /**
@@ -33,8 +22,8 @@ import org.json.JSONObject;
  * @author Mathias
  */
 public class Normalizer {
-
-    private static final String EXCHANGE_NAME = "normalizerInput";
+ 
+    private static final String EXCHANGE_NAME = RoutingKeys.NormulizerInput;
 
     public static void main(String[] argv) throws IOException, InterruptedException, TimeoutException {
        //Connection
@@ -80,7 +69,7 @@ public class Normalizer {
             System.out.println("ssn: " + loanResponse.getSsn());
             System.out.println("bank : " + loanResponse.getBank());
             JSONObject jsonObj = new JSONObject(loanResponse);
-            channelOutput.basicPublish("", "fisk", null,jsonObj.toString().getBytes());
+            channelOutput.basicPublish("", RoutingKeys.Aggregator, null,jsonObj.toString().getBytes());
               
 
         }
