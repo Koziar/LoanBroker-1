@@ -11,20 +11,14 @@ package entity;
  */
 public class Bank {
 
-    private String id;
     private int minimumCreditScore;
     private String name;
     private String routingKey;
 
-    public Bank(String id, int minimumCreditScore, String name, String routingKey) {
-        this.id = id;
+    public Bank(int minimumCreditScore, String name, String routingKey) {
         this.minimumCreditScore = minimumCreditScore;
         this.name = name;
         this.routingKey = routingKey;
-    }
-
-    public String getId() {
-        return id;
     }
 
     public int getMinimumCreditScore() {

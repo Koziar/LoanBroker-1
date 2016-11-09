@@ -5,6 +5,7 @@
  */
 package loanbroker;
 
+import config.RoutingKeys;
 import entity.Bank;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -49,9 +50,9 @@ public class MessageProcessor {
         this.message = message;
         banks = new ArrayList<Bank>();
         availableBanks = new ArrayList<Bank>();
-        availableBanks.add(new Bank("cphbusiness.bankJSON", 700));
-        availableBanks.add(new Bank("cphbusiness.bankXML", 400));
-        availableBanks.add(new Bank("firebug.BankXML", 0));
+        availableBanks.add(new Bank(700, "cphbusiness.bankJSON", RoutingKeys.TranslatorOne));
+        availableBanks.add(new Bank(400, "cphbusiness.bankXML", RoutingKeys.TranslatorTwo));
+        availableBanks.add(new Bank(0, "firebug.BankXML", RoutingKeys.TranslatorThree));
     }
 
     public void processMessage() {
@@ -138,7 +139,7 @@ public class MessageProcessor {
                 eventWriter.add(tab);
                 eventWriter.add(tab);
                 eventWriter.add(eventFactory.createStartElement("", "", XML_BANK_ELEMENT));
-                eventWriter.add(eventFactory.createCharacters(bank.getId()));
+                eventWriter.add(eventFactory.createCharacters(bank.getName()));
                 eventWriter.add(eventFactory.createEndElement("", "", XML_BANK_ELEMENT));
                 eventWriter.add(endLine);
             }

@@ -12,15 +12,15 @@ package config;
 public class RoutingKeys {
     
     //Queue names
-    private static final String GetBanksInput = "GetBanksInput";  
-    private static final String RecipientListInput = "RecipientListInput";  
-    private static final String TranslatorOne = "TranslatorOne";  
-    private static final String TranslatorTwo = "TranslatorTwo";  
-    private static final String TranslatorThree = "TranslatorThree";  
-    private static final String TranslatorFour = "TranslatorFour";  
-    private static final String NormulizerInput = "NormulizerInput";  
-    private static final String Aggregator = "Aggregator";  
-    private static final String result = "result";  
+    public static final String GetBanksInput = "GetBanksInput";
+    public static final String RecipientListInput = "RecipientListInput";
+    public static final String TranslatorOne = "TranslatorOne";
+    public static final String TranslatorTwo = "TranslatorTwo";
+    public static final String TranslatorThree = "TranslatorThree";
+    public static final String TranslatorFour = "TranslatorFour";
+    public static final String NormulizerInput = "NormulizerInput";
+    public static final String Aggregator = "Aggregator";
+    public static final String result = "result";
     //Routing keys
     
 }
