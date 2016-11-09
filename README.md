@@ -2,17 +2,17 @@
 
 #Opgaver
 ## Nikolai
-RecipientList
-Translator (1)
+- RecipientList
+- Translator (1)
 ## Jonathan
-Normalizer
-Bank (Soap)
+- Normalizer
+- Bank (Soap)
 ## Joachim
-Aggregator
-Get creditscore (Webservice)
+- Aggregator
+- Get creditscore (Webservice)
 ## Mathias
-GetBanks
-Bank (Rabbit)
+- GetBanks
+- Bank (Rabbit)
 
 
 Ikke tildelt
