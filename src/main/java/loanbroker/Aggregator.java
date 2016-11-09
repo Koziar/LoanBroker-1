@@ -21,7 +21,8 @@ import com.google.gson.GsonBuilder;
  */
 public class Aggregator {
   private static final String hostName = "datdb.cphbusiness.dk";
-  private static final String queueName = "fireBug";  
+  private static final String recivequeueName = "fireBug";  
+  private static final String sendqueueName = "fireBug";  
   private Message bestMessage;
    
   
@@ -34,7 +35,7 @@ public class Aggregator {
         a.add(m2); 
         
         Aggregator ag = new Aggregator();
-        System.out.println(ag.findSmallestLoan(a));
+       // System.out.println(ag.findSmallestLoan(a));
         ag.send(ag.findSmallestLoan(a));
         ag.recive();
     }
@@ -73,10 +74,10 @@ public class Aggregator {
             Channel chan = conn.createChannel();
           
             //Declare a queue
-            chan.queueDeclare(queueName, false, false, false, null);
+            chan.queueDeclare(recivequeueName, false, false, false, null);
 	    System.out.println(" [*] Waiting for messages. To exit press CTRL+C");
 	    QueueingConsumer consumer = new QueueingConsumer(chan);
-	    chan.basicConsume(queueName, true, consumer);
+	    chan.basicConsume(recivequeueName, true, consumer);
 	    
             //start polling messages
 	    while (true) {
@@ -104,8 +105,8 @@ public class Aggregator {
         Connection connection = connfac.newConnection();
         Channel channel = connection.createChannel();
 
-        channel.queueDeclare(queueName, false, false, false, null);
-        channel.basicPublish("", queueName, null, fm.getBytes()); 
+        channel.queueDeclare(sendqueueName, false, false, false, null);
+        channel.basicPublish("", sendqueueName, null, fm.getBytes()); 
         
         System.out.println(" [x] Sent '" + fm.toString() + "'");
 
