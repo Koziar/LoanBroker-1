@@ -20,3 +20,6 @@ Ikke tildelt
 - Translator (3)
 - Translator (4)  
 - Documentation
+
+#### Rule base
+https://github.com/nikolai94/RulebaseLoanBroker
