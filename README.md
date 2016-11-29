@@ -23,3 +23,7 @@ Ikke tildelt
 
 #### Rule base
 https://github.com/nikolai94/RulebaseLoanBroker
+
+
+### SOAP XML bank
+https://github.com/jonathanec94/SoapXmlBank
