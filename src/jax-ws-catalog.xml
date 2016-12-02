@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<catalog xmlns="urn:oasis:names:tc:entity:xmlns:xml:catalog" prefer="system">
+    <system systemId="http://139.59.154.97:8080/CreditScoreService/CreditScoreService?wsdl" uri="wsdl/139.59.154.97_8080/CreditScoreService/CreditScoreService.wsdl"/>
+    <system systemId="http://139.59.154.97:8080/CreditScoreService/CreditScoreService?xsd=1" uri="wsdl/139.59.154.97_8080/CreditScoreService/CreditScoreService.xsd_1.xsd"/>
+    <system systemId="http://rulebase-testnikolai1.rhcloud.com/RuleBase/RuleBase?wsdl" uri="wsdl/rulebase-testnikolai1.rhcloud.com/RuleBase/RuleBase.wsdl"/>
+    <system systemId="http://rulebase-testnikolai1.rhcloud.com:80/RuleBase/RuleBase?xsd=1" uri="wsdl/rulebase-testnikolai1.rhcloud.com_80/RuleBase/RuleBase.xsd_1.xsd"/>
+</catalog>
