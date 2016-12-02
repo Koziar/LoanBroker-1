@@ -30,14 +30,15 @@ public class GetCreditScore {
      */
      public static void main(String[] args) throws TimeoutException, Exception {
         // TODO code application logic here
-        int creditScore  = creditScore("123456-2323");
+      int creditScore  = creditScore("123456-2323");
         GetCreditScore g = new GetCreditScore();
         
          g.send(creditScore);
          g.recive();
+        
     }
 
-    private static int creditScore(java.lang.String ssn) {
+     private static int creditScore(java.lang.String ssn) {
         org.bank.credit.web.service.CreditScoreService_Service service = new org.bank.credit.web.service.CreditScoreService_Service();
         org.bank.credit.web.service.CreditScoreService port = service.getCreditScoreServicePort();
         return port.creditScore(ssn);
@@ -93,6 +94,5 @@ public class GetCreditScore {
         channel.close();
         connection.close();
     
-    }
-    
+    } 
 }
