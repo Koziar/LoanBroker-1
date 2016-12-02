@@ -10,14 +10,21 @@ import java.util.logging.Logger;
 
 /**
  *
- * @author nikolai hansen
+ * @author nikolai
  */
 public class RabbitConnection {
 
     private String host = "localhost";
     private String userName = "";
     private String password = "";
+    private Integer port = 0;
+    /*private String host = "datdb.cphbusiness.dk";
+    private String userName = "student";
+    private String password = "cph";
+    private Integer port = 5672; 
+    */
     private boolean localhost = true;
+   
     private Channel channel;
     private ConnectionFactory factory;
     private Connection connection;
@@ -36,6 +43,7 @@ public class RabbitConnection {
                 if (!localhost) {
                     factory.setUsername(userName);
                     factory.setPassword(password);
+                    factory.setPort(port);
                 }
                 connection = factory.newConnection();
                 channel = connection.createChannel();
