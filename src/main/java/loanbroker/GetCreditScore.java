@@ -22,7 +22,7 @@ import java.util.concurrent.TimeoutException;
 public class GetCreditScore {
   private static final String hostName = "datdb.cphbusiness.dk";
   private static final String recivequeueName = "fireBug1";  
-  private static final String sendqueueName = "fireBug1";  
+  private static final String sendqueueName = "TeamFirebug";  
   public int creditScore = 0;
   
     /**
@@ -87,7 +87,7 @@ public class GetCreditScore {
         Channel channel = connection.createChannel();
 
         channel.queueDeclare(sendqueueName, false, false, false, null);
-        channel.basicPublish("", sendqueueName, null, fm.getBytes()); 
+        channel.basicPublish(sendqueueName,"" , null, fm.getBytes()); 
         
         System.out.println(" [x] Sent '" + fm.toString() + "'");
 
