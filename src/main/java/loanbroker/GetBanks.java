@@ -5,11 +5,15 @@
  */
 package loanbroker;
 
-import com.rabbitmq.client.AMQP.BasicProperties;
+import com.google.gson.Gson;
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
 import com.rabbitmq.client.QueueingConsumer;
+import entity.Bank;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  *
@@ -17,11 +21,14 @@ import com.rabbitmq.client.QueueingConsumer;
  */
 public class GetBanks {
 
-    private static final String HOST_NAME = "datdb.cphbusiness.dk";
-    private static final String EXCHANGE_NAME = "cphbusiness.bankXML";
-
-    private static Channel channel;
+    private static Connection connection;
     private static QueueingConsumer consumer;
+
+    private static final String INPUT_EXCHANGE_NAME = "input_exchange_name";
+    private static final String OUTPUT_EXCHANGE_NAME = "output_exchange_name";
+
+    private static Channel inputChannel;
+    private static Channel outputChannel;
 
     public static void main(String[] args) throws Exception {
         init();
@@ -32,40 +39,52 @@ public class GetBanks {
 
     private static void consume() throws Exception {
         QueueingConsumer.Delivery delivery = consumer.nextDelivery();
-
-        BasicProperties props = delivery.getProperties();
-        BasicProperties replyProps = new BasicProperties.Builder().correlationId(props.getCorrelationId()).build();
-
         String message = new String(delivery.getBody());
+        int score = Integer.valueOf(message);
+        System.out.println(" [x] Received Score: '" + score + "'");
 
-        System.out.println(message);
+        ArrayList<String> banksFromRuleBase = (ArrayList<String>) getBanksFromRuleBase(score);
+        sendToRecipientList(banksFromRuleBase);
+    }
 
-        MessageProcessor messageProcessor = new MessageProcessor(message);
-        messageProcessor.processMessage();
+    private static void sendToRecipientList(ArrayList<String> banksFromRule) throws IOException {
+        ArrayList<Bank> banks = new ArrayList<>();
+        Gson gson = new Gson();
 
-        String response = messageProcessor.getResponse();
+        for (String item : banksFromRule) {
+            banks.add(gson.fromJson(item, Bank.class));
+        }
 
-        channel.basicPublish("", props.getReplyTo(), replyProps, response.getBytes());
-        channel.basicAck(delivery.getEnvelope().getDeliveryTag(), false);
+        String message = gson.toJson(banks);
+        outputChannel.basicPublish(OUTPUT_EXCHANGE_NAME, "", null, message.getBytes());
     }
 
     private static void init() throws Exception {
         ConnectionFactory factory = new ConnectionFactory();
-        factory.setHost(HOST_NAME);
-        factory.setUsername("student");
-        factory.setPassword("cph");
+        factory.setHost("datdb.cphbusiness.dk");
+        connection = factory.newConnection();
+        inputChannel = connection.createChannel();
+        outputChannel = connection.createChannel();
 
-        Connection connection = factory.newConnection();
-        channel = connection.createChannel();
+        String queueName = inputChannel.queueDeclare().getQueue();
+        inputChannel.queueBind(queueName, INPUT_EXCHANGE_NAME, "");
 
-        channel.exchangeDeclare(EXCHANGE_NAME, "fanout");
-        String queueName = channel.queueDeclare().getQueue();
-        channel.queueBind(queueName, EXCHANGE_NAME, "");
-        channel.basicQos(1);
+        outputChannel.exchangeDeclare(OUTPUT_EXCHANGE_NAME, "fanout");
 
-        consumer = new QueueingConsumer(channel);
+        consumer = new QueueingConsumer(inputChannel);
+        inputChannel.basicConsume(queueName, true, consumer);
 
-        System.out.println("Initilazation Completed");
+        System.out.println(" [*] Waiting for messages. To exit press CTRL+C");
     }
 
+    public static List<String> getBanksFromRuleBase(int creditScore) {
+        try {
+            rule.RuleBase_Service service = new rule.RuleBase_Service();
+            rule.RuleBase port = service.getRuleBasePort();
+            return port.getBanks(creditScore);
+        } catch (Exception ex) {
+            System.out.println(ex.getMessage());
+            return null;
+        }
+    }
 }
