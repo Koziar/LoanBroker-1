@@ -3,39 +3,25 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package entity;
+package dto;
 
 /**
  *
  * @author Jonathan
  */
-public class LoanResponse {
-    
-   int ssn;
-   double interestRate;
-   String bank;
+public class DtoOurSoapXmlBank {
+    int ssn;
+    double interestRate;
+    String bank;
 
-
-    public LoanResponse(int ssn, double interestRate, String bank) {
+    public DtoOurSoapXmlBank(int ssn, double interestRate, String bank) {
         this.ssn = ssn;
         this.interestRate = interestRate;
-        this.bank = bank; 
-
-    }
-
-    public String getBank() {
-        return bank;
-    }
-
-    public void setBank(String bank) {
         this.bank = bank;
     }
-
-
-    public LoanResponse() {
-
+    public DtoOurSoapXmlBank(){
+        
     }
-    
 
     public int getSsn() {
         return ssn;
@@ -53,5 +39,12 @@ public class LoanResponse {
         this.interestRate = interestRate;
     }
 
-    
+    public String getBank() {
+        return bank;
+    }
+
+    public void setBank(String bank) {
+        this.bank = bank;
+    }
+
 }
