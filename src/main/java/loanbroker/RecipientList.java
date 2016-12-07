@@ -13,7 +13,7 @@ import java.io.IOException;
 
 import com.rabbitmq.client.*;
 import config.RabbitConnection;
-import config.RoutingKeys;
+import config.*;
 import entity.Message;
 import java.util.concurrent.TimeoutException;
 
@@ -28,17 +28,17 @@ public class RecipientList {
         //make correlationId for Aggregator
         final String corrId = java.util.UUID.randomUUID().toString();
         //rabbit connect
-        final String exchangeName = "TeamFirebug";
+        final String exchangeName = ExchangeName.OUTPUT_GET_BANKS;
         
         RabbitConnection rabbitConnection = new RabbitConnection();
         
         Channel channel = rabbitConnection.makeConnection();
-        channel.exchangeDeclare(exchangeName, "direct");
+        channel.exchangeDeclare(exchangeName, "fanout");
         
         String queueName = channel.queueDeclare().getQueue();
         
-        //routingKey = RoutingKeys.RecipientListInput
-        channel.queueBind(queueName, exchangeName, RoutingKeys.RecipientListInput);
+        //channel.queueBind(queueName, exchangeName, RoutingKeys.RecipientListInput);
+        channel.queueBind(queueName, exchangeName, "");
          
         //get banks from queue. "Get banks" component
         QueueingConsumer consumer = new QueueingConsumer(channel) {
@@ -46,13 +46,13 @@ public class RecipientList {
             public void handleDelivery(String consumerTag, Envelope envelope, AMQP.BasicProperties properties, byte[] body) throws IOException {
                 String message = new String(body, "UTF-8");
                 //send to Aggregator first
-                sendMessage(exchangeName,RoutingKeys.RecipientListToAggregator,message, corrId);
+                sendMessage(ExchangeName.GLOBAL, RoutingKeys.RecipientListToAggregator, message, corrId);
                 
                 //send to translator
                 Message request = getFromJson(message);
                 if (request.getBanks() != null) {
                     for (Bank bank : request.getBanks()) {
-                        sendMessage(exchangeName,bank.getRoutingKey(), message, corrId);
+                        sendMessage(ExchangeName.GLOBAL,bank.getRoutingKey(), message, corrId);
                         //remember that the component "Get banks" must choose which banks we need to send to(according to credit score)
                     }
                 }

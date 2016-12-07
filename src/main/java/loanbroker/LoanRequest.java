@@ -15,6 +15,7 @@ public class LoanRequest {
         factory.setHost("datdb.cphbusiness.dk");
         Connection connection = factory.newConnection();
         Channel channel = connection.createChannel();
+        channel.exchangeDeclare(ExchangeName.OUTPUT_LOAN_REQUEST, "fanout");
         
         Gson gson = new Gson();
         

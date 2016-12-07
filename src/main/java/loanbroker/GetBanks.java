@@ -12,6 +12,7 @@ import com.rabbitmq.client.ConnectionFactory;
 import com.rabbitmq.client.QueueingConsumer;
 import config.ExchangeName;
 import entity.Bank;
+import entity.Message;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -38,23 +39,26 @@ public class GetBanks {
     private static void consume() throws Exception {
         QueueingConsumer.Delivery delivery = consumer.nextDelivery();
         String message = new String(delivery.getBody());
-        int score = Integer.valueOf(message);
-        System.out.println(" [x] Received Score: '" + score + "'");
-
-        ArrayList<String> banksFromRuleBase = (ArrayList<String>) getBanksFromRuleBase(score);
-        sendToRecipientList(banksFromRuleBase);
+        System.out.println(" [x] Received : '" + message + "'");
+        sendToRecipientList(message);
     }
 
-    private static void sendToRecipientList(ArrayList<String> banksFromRule) throws IOException {
+    private static void sendToRecipientList(String msg) throws IOException {
         ArrayList<Bank> banks = new ArrayList<>();
         Gson gson = new Gson();
+        
+        Message message = gson.fromJson(msg, Message.class);
+        
+        ArrayList<String> banksFromRuleBase = (ArrayList<String>) getBanksFromRuleBase(message.getCreditScore());
 
-        for (String item : banksFromRule) {
-            banks.add(gson.fromJson(item, Bank.class));
+        for (String bank : banksFromRuleBase) {
+            banks.add(gson.fromJson(bank, Bank.class));
         }
 
-        String message = gson.toJson(banks);
-        outputChannel.basicPublish(ExchangeName.OUTPUT_GET_BANKS, "", null, message.getBytes());
+        message.setBanks(banks);
+        String toJson = gson.toJson(message);
+        outputChannel.basicPublish(ExchangeName.OUTPUT_GET_BANKS, "", null, toJson.getBytes());
+        System.out.println(" [x] Sent to : '" + toJson + "'");
     }
 
     private static void init() throws Exception {

@@ -10,6 +10,7 @@ import com.rabbitmq.client.AMQP;
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Envelope;
 import com.rabbitmq.client.QueueingConsumer;
+import config.ExchangeName;
 import config.RabbitConnection;
 import entity.Message;
 import java.io.IOException;
@@ -29,9 +30,9 @@ public class ToXmlSchool {
 
     public static void main(String[] args) throws IOException {
         //final String replyQueueName = "replyFromBanks";
-        final String replyQueueName = "replyFromBanks";
+        final String replyQueueName = "teachersXmlReply";
         final String EXCHANGE_NAME_SCHOOL = "cphbusiness.bankXML";
-        final String exchangeName = "TeamFirebug";
+        final String exchangeName = ExchangeName.GLOBAL;
 
         RabbitConnection rabbitConnection = new RabbitConnection();
 
@@ -66,7 +67,7 @@ public class ToXmlSchool {
             channel.exchangeDeclare(exchangeName, "fanout");
 
             AMQP.BasicProperties props = new AMQP.BasicProperties.Builder()
-                    .correlationId(exchangeName + "#" + corrId)
+                    .correlationId(corrId)
                     .replyTo(replyQueueName)
                     .build();
 
@@ -91,7 +92,7 @@ public class ToXmlSchool {
         dto.setCreditScore(msg.getCreditScore());
         dto.setLoanAmount(msg.getLoanAmount());
           //!!!change this LoanDuration in Message class, it needs to be a String instead of int!!! because we need this format '1973-01-01 01:00:00.0 CET'
-        dto.setLoanDuration(new Integer(msg.getLoanDuration()).toString());
+        dto.setLoanDuration(msg.getLoanDuration());
 
         try {
             JAXBContext jaxbContext = JAXBContext.newInstance(LoanRequest.class);
