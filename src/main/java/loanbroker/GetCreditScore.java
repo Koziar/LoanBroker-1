@@ -23,8 +23,7 @@ import java.util.concurrent.TimeoutException;
  */
 public class GetCreditScore {
   private static final String hostName = "datdb.cphbusiness.dk"; 
-  public int creditScore = 0;
-  
+ 
     /**
      * @param args the command line arguments
      */
@@ -54,24 +53,32 @@ public class GetCreditScore {
             Channel chan = conn.createChannel();
           
             //Declare a queue
-            chan.queueDeclare(ExchangeName.OUTPUT_LOAN_REQUEST, false, false, false, null);
-	    System.out.println(" [*] Waiting for messages. To exit press CTRL+C");
+            chan.exchangeDeclare(ExchangeName.OUTPUT_LOAN_REQUEST, "fanout");
+            String queueName = chan.queueDeclare().getQueue();
+            chan.queueBind(queueName,ExchangeName.OUTPUT_LOAN_REQUEST,"");
+            
+	    System.out.println(" [*] Waiting for messages on "+ ExchangeName.OUTPUT_LOAN_REQUEST +". To exit press CTRL+C");
+            
 	    QueueingConsumer consumer = new QueueingConsumer(chan);
-	    chan.basicConsume(ExchangeName.OUTPUT_LOAN_REQUEST, true, consumer);
+	    chan.basicConsume(queueName, true, consumer);
 	    
             //start polling messages
 	    while (true) {
 	      QueueingConsumer.Delivery delivery = consumer.nextDelivery();
 	      String m = new String(delivery.getBody());
 	      System.out.println(" [x] Received '" + m + "'");
-              int creditScore  = creditScore(m);
-                 send(creditScore);
+               Gson gson = new GsonBuilder().create();
+                Message fm = gson.fromJson(m, Message.class);
+              int creditScore  = creditScore(fm.getSsn());
+                fm.setCreditScore(creditScore);
+                send(fm);
+                 
               
 	    }
         
     
     } 
-    public void send(int creditScore) throws IOException, TimeoutException, Exception
+    public void send(entity.Message creditScoreMessage) throws IOException, TimeoutException, Exception
     {
      ConnectionFactory connfac = new ConnectionFactory();
         connfac.setHost(hostName);
@@ -80,7 +87,7 @@ public class GetCreditScore {
         connfac.setPassword("cph");
         Gson gson = new GsonBuilder().create();
         
-        String fm = gson.toJson(creditScore);
+        String fm = gson.toJson(creditScoreMessage);
         
         Connection connection = connfac.newConnection();
         Channel channel = connection.createChannel(); 

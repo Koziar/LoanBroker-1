@@ -14,4 +14,5 @@ public class ExchangeName {
     public static final String OUTPUT_LOAN_REQUEST = "output_loan_request";
     public static final String OUTPUT_GET_BANKS = "output_get_banks";
     public static final String OUTPUT_GET_CREDITSCORE = "output_get_creditscore";
+    public static final String GLOBAL = "TeamFirebug";
 }
