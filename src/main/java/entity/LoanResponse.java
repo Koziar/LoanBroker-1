@@ -14,13 +14,14 @@ public class LoanResponse {
    int ssn;
    double interestRate;
    String bank;
+   String correlationId;
 
 
-    public LoanResponse(int ssn, double interestRate, String bank) {
+    public LoanResponse(int ssn, double interestRate, String bank, String correlationId) {
         this.ssn = ssn;
         this.interestRate = interestRate;
         this.bank = bank; 
-
+        this.correlationId = correlationId;
     }
 
     public String getBank() {
