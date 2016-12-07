@@ -66,11 +66,12 @@ public class ToJsonSchool {
             channel.exchangeDeclare(exchangeName, "fanout");
             
             AMQP.BasicProperties props = new AMQP.BasicProperties.Builder()
-                    .correlationId(exchangeName+"#"+corrId)
+                    .correlationId(corrId)
                     .replyTo(replyQueueName)
                     .build();
-            
-            String message = gson.toJson(new DtoJsonBank(msg.getSsn(), msg.getCreditScore(), msg.getLoanAmount(), msg.getLoanDuration()));
+            //!!!!!!!!!!!!!!!!!!HUSK!!!!!!!!!!!!
+            //String message = gson.toJson(new DtoJsonBank(msg.getSsn(), msg.getCreditScore(), msg.getLoanAmount(), msg.getLoanDuration()));
+            String message = gson.toJson(new DtoJsonBank(msg.getSsn(), msg.getCreditScore(), msg.getLoanAmount(), "360"));
             channel.basicPublish(exchangeName, "", props, message.getBytes());
             rabbitConnection.closeChannelAndConnection();
             System.out.println(" [x] Sent :" + msg.toString() + "");

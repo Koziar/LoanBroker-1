@@ -46,7 +46,7 @@ public class RecipientList {
             public void handleDelivery(String consumerTag, Envelope envelope, AMQP.BasicProperties properties, byte[] body) throws IOException {
                 String message = new String(body, "UTF-8");
                 //send to Aggregator first
-                sendMessage(exchangeName,RoutingKeys.RecipientListToAggregator,message, corrId);
+                sendMessage(ExchangeName.GLOBAL, RoutingKeys.RecipientListToAggregator, message, corrId);
                 
                 //send to translator
                 Message request = getFromJson(message);
