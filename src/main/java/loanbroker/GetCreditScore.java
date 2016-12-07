@@ -22,7 +22,7 @@ import java.util.concurrent.TimeoutException;
 public class GetCreditScore {
   private static final String hostName = "datdb.cphbusiness.dk";
   private static final String recivequeueName = "fireBug1";  
-  private static final String sendqueueName = "fireBug1";  
+  private static final String sendqueueName = "TeamFirebug";  
   public int creditScore = 0;
   
     /**
@@ -30,14 +30,15 @@ public class GetCreditScore {
      */
      public static void main(String[] args) throws TimeoutException, Exception {
         // TODO code application logic here
-        int creditScore  = creditScore("123456-2323");
+      int creditScore  = creditScore("123456-2323");
         GetCreditScore g = new GetCreditScore();
         
          g.send(creditScore);
          g.recive();
+        
     }
 
-    private static int creditScore(java.lang.String ssn) {
+     private static int creditScore(java.lang.String ssn) {
         org.bank.credit.web.service.CreditScoreService_Service service = new org.bank.credit.web.service.CreditScoreService_Service();
         org.bank.credit.web.service.CreditScoreService port = service.getCreditScoreServicePort();
         return port.creditScore(ssn);
@@ -86,13 +87,12 @@ public class GetCreditScore {
         Channel channel = connection.createChannel();
 
         channel.queueDeclare(sendqueueName, false, false, false, null);
-        channel.basicPublish("", sendqueueName, null, fm.getBytes()); 
+        channel.basicPublish(sendqueueName,"" , null, fm.getBytes()); 
         
         System.out.println(" [x] Sent '" + fm.toString() + "'");
 
         channel.close();
         connection.close();
     
-    }
-    
+    } 
 }
