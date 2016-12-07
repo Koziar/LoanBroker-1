@@ -63,6 +63,7 @@ public class NormalizerTeachersXmlBank {
             System.out.println("ssn: " + loanResponse.getSsn());
             System.out.println("bank : " + loanResponse.getBank());
             JSONObject jsonObj = new JSONObject(loanResponse);
+            System.out.println("JSON:"+ jsonObj);
            // channelOutput.basicPublish("", RoutingKeys.Aggregator, null, jsonObj.toString().getBytes());
             channelOutput.basicPublish("TeamFirebug", "normalizerToAggregator", null, jsonObj.toString().getBytes());
             delivery = null;

@@ -54,5 +54,18 @@ public class LoanResponse {
         this.interestRate = interestRate;
     }
 
+    public String getCorrelationId() {
+        return correlationId;
+    }
+
+    public void setCorrelationId(String correlationId) {
+        this.correlationId = correlationId;
+    }
+
+    @Override
+    public String toString() {
+        return "LoanResponse{" + "ssn=" + ssn + ", interestRate=" + interestRate + ", bank=" + bank + ", correlationId=" + correlationId + '}';
+    }
+
     
 }

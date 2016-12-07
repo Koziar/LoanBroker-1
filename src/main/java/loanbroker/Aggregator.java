@@ -24,6 +24,7 @@ import config.ExchangeName;
 import config.RoutingKeys;
 import entity.Bank;
 import entity.LoanResponse;
+import static java.lang.Integer.parseInt;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.Map;
@@ -45,37 +46,13 @@ public class Aggregator {
         Hashtable<String, Message> messagesFromBankList = new Hashtable<String, Message>();
         Hashtable<String, Message> messagesFromNormalizer = new Hashtable<String, Message>();
         ArrayList<Message> foundMessages = new ArrayList<Message>();
-
-        //Costumer 1
-        Message m1 = new Message("1234567", 12212, 1222.0, "1973-01-01 01:00:00.0 CET");
-        Message m2 = new Message("1234567", 122213123, 1221111.0, "1973-01-01 01:00:00.0 CET");
-        Message m3 = new Message("1234567", 123, 1221111.0, "1973-01-01 01:00:00.0 CET");
-
-        //Costumer 2 
-        Message c1 = new Message("1234564", 12212, 1222.0, "1973-01-01 01:00:00.0 CET");
-        Message c2 = new Message("1234564", 122213123, 1221111.0, "1973-01-01 01:00:00.0 CET");
-        Message c3 = new Message("1234564", 3123, 1221111.0, "1973-01-01 01:00:00.0 CET");
-
+ 
         Aggregator ag = new Aggregator();
 
         //Costumer 1
         ag.reciveFromNormalizer(messagesFromBankList, messagesFromNormalizer, foundMessages);
         ag.reciveFromRecieptList(messagesFromBankList);
-        // ag.send(m1,RoutingKeys.Result);   
-        /*   ag.send(m1,RoutingKeys.Aggregator);  
-        ag.send(m2,RoutingKeys.Aggregator);   
-        ag.send(m2,RoutingKeys.Aggregator);
-        ag.send(m3,RoutingKeys.Aggregator);   
-        ag.send(m3,RoutingKeys.Aggregator);
-         
-         //Costumer 2
-         ag.send(c1,RoutingKeys.Aggregator);   
-        ag.send(c1,RoutingKeys.Aggregator);  
-        ag.send(c2,RoutingKeys.Aggregator);   
-        ag.send(c2,RoutingKeys.Aggregator);
-        ag.send(c3,RoutingKeys.Aggregator);   
-        ag.send(c3,RoutingKeys.Aggregator);
-         */
+       
     }
 
     private void checkLoanMessages(Hashtable<String, Message> messageBank, Hashtable<String, Message> mn, ArrayList<Message> fm) throws IOException, InterruptedException, TimeoutException, Exception {
@@ -86,13 +63,14 @@ public class Aggregator {
         while (mb.hasNext()) {
             Map.Entry<String, Message> entryMB = mb.next();
             if (mn.get(entryMB.getKey()) != null) {
+                mn.get(entryMB.getKey()).setBanks(entryMB.getValue().getBanks());
                 fm.add(mn.get(entryMB.getKey()));
                 mn.remove(mn.get(entryMB.getKey()));
                 messageBank.remove(mn.get(entryMB.getKey()));
             }
         }
 
-        findBest(fm);
+        //findBest(fm);
 
     }
 
@@ -102,6 +80,7 @@ public class Aggregator {
         System.out.println("Loops through the messsages in the message array. ");
         for (int i = 0; i < messages.size(); i++) {
             Message y = messages.get(i);
+            
 
             ArrayList<Message> finalMessages = new ArrayList<Message>();
             for (int k = 0; k < messages.size(); k++) {
@@ -115,7 +94,8 @@ public class Aggregator {
                 }
                 Message bestMessage = new Message("", 0, 0, "");
                 System.out.println("Checking if all messages from the banks are recived.");
-                if (finalMessages.size() == y.getBanks().size()) {
+                System.out.println(""+finalMessages.size()+" - "+y.getBanks().size()+"");
+                if (finalMessages.size() == 2) {
                     System.out.println("Finding the best creditscore");
                     for (int o = 0; o < finalMessages.size(); o++) {
 
@@ -132,6 +112,7 @@ public class Aggregator {
                     send(bestMessage, RoutingKeys.Result);
                     finalMessages.remove(bestMessage);
                     messages.remove(bestMessage);
+                    bestMessage.setSsn("");
 
                 } else {
                     System.out.println("NOTHING SENT");
@@ -154,8 +135,12 @@ public class Aggregator {
 
         channel.exchangeDeclare(ExchangeName.GLOBAL, "direct");
 
+        
+        //creating LoanResponse object
+        LoanResponse lp = new LoanResponse(parseInt(m.getSsn()), m.getCreditScore(),m.getLoanDuration(), "");
+        
         Gson gson = new GsonBuilder().create();
-        String fm = gson.toJson(m); 
+        String fm = gson.toJson(lp); 
         BasicProperties props = new BasicProperties.Builder()
                 .build();
 
@@ -187,15 +172,12 @@ public class Aggregator {
             @Override
             public void handleDelivery(String consumerTag, Envelope envelope,
                     AMQP.BasicProperties properties, byte[] body) throws IOException {
-                String m = new String(body, "UTF-8");
-                System.out.println("reciveFromNormalizer" + m);
-                 String p = properties.getCorrelationId();
-                if(p != null){
-                Gson gson = new GsonBuilder().create();
-                LoanResponse lp = gson.fromJson(m, LoanResponse.class);
-                Message fm = new Message(""+lp.getSsn(), (int) lp.getInterestRate(), 0, lp.getBank());
+                String m = new String(body, "UTF-8"); 
                 
-                messagesFromNormalizer.put(p, fm);
+                Gson gson = new GsonBuilder().create();
+                LoanResponse lp = gson.fromJson(m, LoanResponse.class); 
+                Message fm = new Message(""+lp.getSsn(), (int) lp.getInterestRate(), 0, lp.getBank()); 
+                messagesFromNormalizer.put(lp.getCorrelationId(), fm);
 
                 System.out.println(" [x] Received '" + envelope.getRoutingKey() + "':'" + fm.toString() + "'");
                 try {
@@ -207,11 +189,7 @@ public class Aggregator {
                 } catch (Exception ex) {
                     Logger.getLogger(Aggregator.class.getName()).log(Level.SEVERE, null, ex);
                 }
-                }
-                else
-                  {
-                      System.out.println("No correlationId");
-                  }  
+                 
             }
         };
         channel.basicConsume(queueName, true, consumer);

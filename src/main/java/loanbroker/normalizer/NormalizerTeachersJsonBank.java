@@ -5,6 +5,8 @@
  */
 package loanbroker.normalizer;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
@@ -67,7 +69,11 @@ public class NormalizerTeachersJsonBank {
                 System.out.println("ssn: " + loanResponse.getSsn());
                 System.out.println("bank : " + loanResponse.getBank());
 //             System.out.println(" [x] Received '" + message + "'");
-                channelOutput.basicPublish("TeamFirebug", "normalizerToAggregator", null, jsonObj.toString().getBytes());
+                System.out.println("JSON:"+loanResponse);
+                System.out.println("TOstring:"+jsonObj.toString());
+                   Gson g = new Gson(); 
+                String fm =  g.toJson(loanResponse);
+                channelOutput.basicPublish("TeamFirebug", "normalizerToAggregator", null, fm.getBytes());
 
             }
 

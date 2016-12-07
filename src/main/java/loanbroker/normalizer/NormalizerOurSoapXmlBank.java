@@ -56,7 +56,7 @@ public class NormalizerOurSoapXmlBank {
             String routingKey = delivery.getEnvelope().getRoutingKey();
 
             DtoOurSoapXmlBank dtoOurSoapXmlBank = JAXB.unmarshal(new StringReader(message), DtoOurSoapXmlBank.class);
-            LoanResponse loanResponse = new LoanResponse(dtoOurSoapXmlBank.getSsn(), dtoOurSoapXmlBank.getInterestRate(), routingKey);
+            LoanResponse loanResponse = new LoanResponse(dtoOurSoapXmlBank.getSsn(), dtoOurSoapXmlBank.getInterestRate(),"", delivery.getProperties().getCorrelationId());
             // loanResponse.setBank(routingKey);
 
             System.out.println("renter: " + loanResponse.getInterestRate());
