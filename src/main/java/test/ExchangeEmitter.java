@@ -3,10 +3,9 @@ package test;
 import com.rabbitmq.client.ConnectionFactory;
 import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.Channel;
+import config.ExchangeName;
 
 public class ExchangeEmitter {
-
-    private static final String EXCHANGE_NAME = "input_exchange_name";
 
     public static void main(String[] argv) throws Exception {
 
@@ -14,11 +13,11 @@ public class ExchangeEmitter {
         factory.setHost("datdb.cphbusiness.dk");
         Connection connection = factory.newConnection();
         Channel channel = connection.createChannel();
-        channel.exchangeDeclare(EXCHANGE_NAME, "fanout");
+        channel.exchangeDeclare(ExchangeName.OUTPUT_LOAN_REQUEST, "fanout");
 
         String message = "700";
 
-        channel.basicPublish(EXCHANGE_NAME, "", null, message.getBytes());
+        channel.basicPublish(ExchangeName.OUTPUT_LOAN_REQUEST, "", null, message.getBytes());
         System.out.println(" [x] Sent '" + message + "'");
 
         channel.close();

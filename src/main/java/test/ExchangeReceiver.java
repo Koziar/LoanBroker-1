@@ -4,10 +4,9 @@ import com.rabbitmq.client.ConnectionFactory;
 import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.QueueingConsumer;
+import config.ExchangeName;
 
 public class ExchangeReceiver {
-
-    private static final String EXCHANGE_NAME = "output_exchange_name";
 
     public static void main(String[] argv) throws Exception {
 
@@ -16,9 +15,9 @@ public class ExchangeReceiver {
         Connection connection = factory.newConnection();
         Channel channel = connection.createChannel();
 
-        channel.exchangeDeclare(EXCHANGE_NAME, "fanout");
+        channel.exchangeDeclare(ExchangeName.OUTPUT_GET_BANKS, "fanout");
         String queueName = channel.queueDeclare().getQueue();
-        channel.queueBind(queueName, EXCHANGE_NAME, "");
+        channel.queueBind(queueName, ExchangeName.OUTPUT_GET_BANKS, "");
         
         System.out.println(" [*] Waiting for messages. To exit press CTRL+C");
 

@@ -10,6 +10,7 @@ import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
 import com.rabbitmq.client.QueueingConsumer;
+import config.ExchangeName;
 import entity.Bank;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -23,9 +24,6 @@ public class GetBanks {
 
     private static Connection connection;
     private static QueueingConsumer consumer;
-
-    private static final String INPUT_EXCHANGE_NAME = "input_exchange_name";
-    private static final String OUTPUT_EXCHANGE_NAME = "output_exchange_name";
 
     private static Channel inputChannel;
     private static Channel outputChannel;
@@ -56,7 +54,7 @@ public class GetBanks {
         }
 
         String message = gson.toJson(banks);
-        outputChannel.basicPublish(OUTPUT_EXCHANGE_NAME, "", null, message.getBytes());
+        outputChannel.basicPublish(ExchangeName.OUTPUT_GET_BANKS, "", null, message.getBytes());
     }
 
     private static void init() throws Exception {
@@ -66,10 +64,11 @@ public class GetBanks {
         inputChannel = connection.createChannel();
         outputChannel = connection.createChannel();
 
+        inputChannel.exchangeDeclare(ExchangeName.OUTPUT_LOAN_REQUEST, "fanout");
         String queueName = inputChannel.queueDeclare().getQueue();
-        inputChannel.queueBind(queueName, INPUT_EXCHANGE_NAME, "");
+        inputChannel.queueBind(queueName, ExchangeName.OUTPUT_LOAN_REQUEST, "");
 
-        outputChannel.exchangeDeclare(OUTPUT_EXCHANGE_NAME, "fanout");
+        outputChannel.exchangeDeclare(ExchangeName.OUTPUT_GET_BANKS, "fanout");
 
         consumer = new QueueingConsumer(inputChannel);
         inputChannel.basicConsume(queueName, true, consumer);
