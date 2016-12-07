@@ -46,6 +46,7 @@ public class ToJsonSchool {
                 String message = new String(body, "UTF-8");
                 System.out.println("Received msg: "+message);
                 Message messageFromJson = getFromJson(message);
+                
                 sendMsgToBank(messageFromJson, properties.getCorrelationId(), EXCHANGE_NAME_SCHOOL, replyQueueName);
             }
         };
