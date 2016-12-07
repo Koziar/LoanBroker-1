@@ -64,9 +64,9 @@ public class GetBanks {
         inputChannel = connection.createChannel();
         outputChannel = connection.createChannel();
 
-        inputChannel.exchangeDeclare(ExchangeName.OUTPUT_LOAN_REQUEST, "fanout");
+        inputChannel.exchangeDeclare(ExchangeName.OUTPUT_GET_CREDITSCORE, "fanout");
         String queueName = inputChannel.queueDeclare().getQueue();
-        inputChannel.queueBind(queueName, ExchangeName.OUTPUT_LOAN_REQUEST, "");
+        inputChannel.queueBind(queueName, ExchangeName.OUTPUT_GET_CREDITSCORE, "");
 
         outputChannel.exchangeDeclare(ExchangeName.OUTPUT_GET_BANKS, "fanout");
 

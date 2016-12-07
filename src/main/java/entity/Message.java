@@ -15,10 +15,10 @@ public class Message {
     private String ssn;
     private int creditScore;
     private double loanAmount;
-    private int loanDuration;
+    private String loanDuration;
     private ArrayList<Bank> banks;
 
-    public Message(String ssn, int creditScore, double loanAmount, int loanDuration) {
+    public Message(String ssn, int creditScore, double loanAmount, String loanDuration) {
         this.ssn = ssn;
         this.creditScore = creditScore;
         this.loanAmount = loanAmount;
@@ -49,11 +49,11 @@ public class Message {
         this.loanAmount = loanAmount;
     }
 
-    public int getLoanDuration() {
+    public String getLoanDuration() {
         return loanDuration;
     }
 
-    public void setLoanDuration(int loanDuration) {
+    public void setLoanDuration(String loanDuration) {
         this.loanDuration = loanDuration;
     }
 
