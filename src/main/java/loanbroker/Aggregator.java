@@ -129,7 +129,7 @@ public class Aggregator {
                 System.out.println("Checks if SSN number exists");
                 if (bestMessage.getSsn() != "") {
                     System.out.println("Sending the message thought Rabbitmq.");
-                    send(bestMessage, "AggregatorToResult");
+                    send(bestMessage, RoutingKeys.Result);
                     finalMessages.remove(bestMessage);
                     messages.remove(bestMessage);
 
@@ -190,8 +190,8 @@ public class Aggregator {
                     AMQP.BasicProperties properties, byte[] body) throws IOException {
                 String m = new String(body, "UTF-8");
                 System.out.println("reciveFromNormalizer" + m);
-                //String p = properties.getCorrelationId();
-                String p = "hej";
+                 String p = properties.getCorrelationId();
+                //String p = "hej";
                 Gson gson = new GsonBuilder().create();
                 LoanResponse lp = gson.fromJson(m, LoanResponse.class);
                 Message fm = new Message(""+lp.getSsn(), (int) lp.getInterestRate(), 0, lp.getBank());
@@ -233,7 +233,7 @@ public class Aggregator {
                     AMQP.BasicProperties properties, byte[] body) throws IOException {
                 String m = new String(body, "UTF-8");
                 System.out.println("reciveFromRecieptList" + m);
-                String p = "hej";
+                String p = properties.getCorrelationId();
 
                 //send to translator
                  Gson g = new Gson(); 
