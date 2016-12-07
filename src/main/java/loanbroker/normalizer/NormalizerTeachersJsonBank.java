@@ -62,7 +62,7 @@ public class NormalizerTeachersJsonBank {
                 JSONObject jsonObj = new JSONObject(message);
 
 
-                loanResponse = new LoanResponse(jsonObj.getInt("ssn"), jsonObj.getDouble("interestRate"), "Teachers Json Bank");
+                loanResponse = new LoanResponse(jsonObj.getInt("ssn"), jsonObj.getDouble("interestRate"), "Teachers Json Bank",delivery.getProperties().getCorrelationId());
                 System.out.println("renter: " + loanResponse.getInterestRate());
                 System.out.println("ssn: " + loanResponse.getSsn());
                 System.out.println("bank : " + loanResponse.getBank());
