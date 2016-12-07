@@ -25,7 +25,7 @@ import org.json.JSONObject;
 public class NormalizerTeachersJsonBank {
 
     private static final String EXCHANGE_NAME = "cphbusiness.bankJSON";
-    private static final String RPC_QUEUE_NAME = "testQueue_reply";
+    private static final String RPC_QUEUE_NAME = "teachersJsonReply";
 
     public static void main(String[] args) {
         try {
@@ -47,27 +47,27 @@ public class NormalizerTeachersJsonBank {
             channel.basicConsume(RPC_QUEUE_NAME, true, consumer);
             //producer 
             Channel channelOutput = connection.createChannel();
-            channelOutput.exchangeDeclare("sendtoAggre2", "direct");
+            channelOutput.exchangeDeclare("TeamFirebug", "direct");
             String queueName = channelOutput.queueDeclare().getQueue();
-            channelOutput.queueBind(queueName, EXCHANGE_NAME, "info");
+            channelOutput.queueBind(queueName, EXCHANGE_NAME, "normalizerToAggregator");
 
             LoanResponse loanResponse;
             while (true) {
-                System.out.println("reading");
+                System.out.println("Reading");
                 QueueingConsumer.Delivery delivery = consumer.nextDelivery();
                 System.out.println("CorrelationId: " + delivery.getProperties().getCorrelationId());
 
                 String message = new String(delivery.getBody());
-                System.out.println(message);
+              
                 JSONObject jsonObj = new JSONObject(message);
 
-                System.out.println(" [x] Received '" + "from bank" + "':'" + message + "'");
+
                 loanResponse = new LoanResponse(jsonObj.getInt("ssn"), jsonObj.getDouble("interestRate"), "Teachers Json Bank");
                 System.out.println("renter: " + loanResponse.getInterestRate());
                 System.out.println("ssn: " + loanResponse.getSsn());
                 System.out.println("bank : " + loanResponse.getBank());
 //             System.out.println(" [x] Received '" + message + "'");
-                channelOutput.basicPublish("sendtoAggre2", "info", null, jsonObj.toString().getBytes());
+                channelOutput.basicPublish("TeamFirebug", "normalizerToAggregator", null, jsonObj.toString().getBytes());
 
             }
 
