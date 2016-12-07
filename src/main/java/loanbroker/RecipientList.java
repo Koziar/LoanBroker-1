@@ -13,7 +13,7 @@ import java.io.IOException;
 
 import com.rabbitmq.client.*;
 import config.RabbitConnection;
-import config.RoutingKeys;
+import config.*;
 import entity.Message;
 import java.util.concurrent.TimeoutException;
 
@@ -28,17 +28,17 @@ public class RecipientList {
         //make correlationId for Aggregator
         final String corrId = java.util.UUID.randomUUID().toString();
         //rabbit connect
-        final String exchangeName = "TeamFirebug";
+        final String exchangeName = ExchangeName.OUTPUT_GET_BANKS;
         
         RabbitConnection rabbitConnection = new RabbitConnection();
         
         Channel channel = rabbitConnection.makeConnection();
-        channel.exchangeDeclare(exchangeName, "direct");
+        channel.exchangeDeclare(exchangeName, "fanout");
         
         String queueName = channel.queueDeclare().getQueue();
         
-        //routingKey = RoutingKeys.RecipientListInput
-        channel.queueBind(queueName, exchangeName, RoutingKeys.RecipientListInput);
+        //channel.queueBind(queueName, exchangeName, RoutingKeys.RecipientListInput);
+        channel.queueBind(queueName, exchangeName, "");
          
         //get banks from queue. "Get banks" component
         QueueingConsumer consumer = new QueueingConsumer(channel) {
