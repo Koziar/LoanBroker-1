@@ -45,15 +45,15 @@ public class Aggregator {
          ArrayList<Message> foundMessages = new ArrayList<Message>();
         
          //Costumer 1
-         Message m1 = new Message("1234567", 12212, 1222.0, 121); 
-         Message m2 = new Message("1234567", 122213123, 1221111.0, 151);
-         Message m3 = new Message("1234567", 123, 1221111.0, 151);
+         Message m1 = new Message("1234567", 12212, 1222.0, "1973-01-01 01:00:00.0 CET"); 
+         Message m2 = new Message("1234567", 122213123, 1221111.0, "1973-01-01 01:00:00.0 CET");
+         Message m3 = new Message("1234567", 123, 1221111.0, "1973-01-01 01:00:00.0 CET");
           
          
          //Costumer 2 
-         Message c1 = new Message("1234564", 12212, 1222.0, 121); 
-         Message c2 = new Message("1234564", 122213123, 1221111.0, 151);
-         Message c3 = new Message("1234564", 3123, 1221111.0, 151);
+         Message c1 = new Message("1234564", 12212, 1222.0, "1973-01-01 01:00:00.0 CET"); 
+         Message c2 = new Message("1234564", 122213123, 1221111.0, "1973-01-01 01:00:00.0 CET");
+         Message c3 = new Message("1234564", 3123, 1221111.0, "1973-01-01 01:00:00.0 CET");
         
         Aggregator ag = new Aggregator(); 
         
@@ -115,7 +115,7 @@ public class Aggregator {
                 finalMessages.add(messages.get(k));
                 
                 }
-                 Message bestMessage = new Message("", 0, 0, 0);
+                 Message bestMessage = new Message("", 0, 0, "");
                   System.out.println("Checking if all messages from the banks are recived.");
                 if(finalMessages.size() == 3)
                 { 
