@@ -39,7 +39,7 @@ public class GetCreditScore {
         org.bank.credit.web.service.CreditScoreService port = service.getCreditScoreServicePort();
         return port.creditScore(ssn);
     }
-     private void recive() throws IOException, TimeoutException, InterruptedException, Exception
+     void recive() throws IOException, TimeoutException, InterruptedException, Exception
     {
             //setting the connection to the RabbitMQ server
             ConnectionFactory connfac = new ConnectionFactory();
@@ -70,7 +70,8 @@ public class GetCreditScore {
                Gson gson = new GsonBuilder().create();
                 Message fm = gson.fromJson(m, Message.class);
               int creditScore  = creditScore(fm.getSsn());
-                fm.setCreditScore(creditScore);
+                fm.setCreditScore(800);
+                fm.setSsn(fm.getSsn().replace("-", ""));
                 send(fm);
                  
               
