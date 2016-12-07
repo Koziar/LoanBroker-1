@@ -30,7 +30,7 @@ public class ToXmlSchool {
 
     public static void main(String[] args) throws IOException {
         //final String replyQueueName = "replyFromBanks";
-        final String replyQueueName = "replyFromBanks";
+        final String replyQueueName = "teachersXmlReply";
         final String EXCHANGE_NAME_SCHOOL = "cphbusiness.bankXML";
         final String exchangeName = ExchangeName.GLOBAL;
 
