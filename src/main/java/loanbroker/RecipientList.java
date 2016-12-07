@@ -26,7 +26,7 @@ public class RecipientList {
     //Rabbit mq make function send to all banks to their channel (direct)
     public static void main(String[] args) throws Exception {
         //make correlationId for Aggregator
-        final String corrId = java.util.UUID.randomUUID().toString();
+       
         //rabbit connect
         final String exchangeName = ExchangeName.OUTPUT_GET_BANKS;
         
@@ -42,6 +42,8 @@ public class RecipientList {
          
         //get banks from queue. "Get banks" component
         QueueingConsumer consumer = new QueueingConsumer(channel) {
+            String corrId = java.util.UUID.randomUUID().toString();
+            
             @Override
             public void handleDelivery(String consumerTag, Envelope envelope, AMQP.BasicProperties properties, byte[] body) throws IOException {
                 String message = new String(body, "UTF-8");
@@ -78,7 +80,7 @@ public class RecipientList {
                     .build();
 
             channel.exchangeDeclare(exchangeName, "direct");
-            channel.basicPublish(exchangeName, routingKey, null, msg.getBytes("UTF-8"));
+            channel.basicPublish(exchangeName, routingKey, props, msg.getBytes("UTF-8"));
             rabbitConnection.closeChannelAndConnection();
             System.out.println(" [x] Sent :" + msg + "");
         } catch (IOException ex) {
