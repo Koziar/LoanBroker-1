@@ -11,6 +11,8 @@ import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
 import com.rabbitmq.client.QueueingConsumer;
+import config.ExchangeName;
+import config.RoutingKeys;
 import entity.Message;
 import java.io.IOException;
 import java.util.concurrent.TimeoutException;
@@ -20,9 +22,7 @@ import java.util.concurrent.TimeoutException;
  * @author Joachim
  */
 public class GetCreditScore {
-  private static final String hostName = "datdb.cphbusiness.dk";
-  private static final String recivequeueName = "fireBug1";  
-  private static final String sendqueueName = "TeamFirebug";  
+  private static final String hostName = "datdb.cphbusiness.dk"; 
   public int creditScore = 0;
   
     /**
@@ -30,10 +30,7 @@ public class GetCreditScore {
      */
      public static void main(String[] args) throws TimeoutException, Exception {
         // TODO code application logic here
-      int creditScore  = creditScore("123456-2323");
-        GetCreditScore g = new GetCreditScore();
-        
-         g.send(creditScore);
+      GetCreditScore g = new GetCreditScore(); 
          g.recive();
         
     }
@@ -43,7 +40,7 @@ public class GetCreditScore {
         org.bank.credit.web.service.CreditScoreService port = service.getCreditScoreServicePort();
         return port.creditScore(ssn);
     }
-      private void recive() throws IOException, TimeoutException, InterruptedException
+     private void recive() throws IOException, TimeoutException, InterruptedException, Exception
     {
             //setting the connection to the RabbitMQ server
             ConnectionFactory connfac = new ConnectionFactory();
@@ -57,21 +54,23 @@ public class GetCreditScore {
             Channel chan = conn.createChannel();
           
             //Declare a queue
-            chan.queueDeclare(recivequeueName, false, false, false, null);
+            chan.queueDeclare(ExchangeName.OUTPUT_LOAN_REQUEST, false, false, false, null);
 	    System.out.println(" [*] Waiting for messages. To exit press CTRL+C");
 	    QueueingConsumer consumer = new QueueingConsumer(chan);
-	    chan.basicConsume(recivequeueName, true, consumer);
+	    chan.basicConsume(ExchangeName.OUTPUT_LOAN_REQUEST, true, consumer);
 	    
             //start polling messages
 	    while (true) {
 	      QueueingConsumer.Delivery delivery = consumer.nextDelivery();
 	      String m = new String(delivery.getBody());
 	      System.out.println(" [x] Received '" + m + "'");
+              int creditScore  = creditScore(m);
+                 send(creditScore);
               
 	    }
         
     
-    }
+    } 
     public void send(int creditScore) throws IOException, TimeoutException, Exception
     {
      ConnectionFactory connfac = new ConnectionFactory();
@@ -84,10 +83,9 @@ public class GetCreditScore {
         String fm = gson.toJson(creditScore);
         
         Connection connection = connfac.newConnection();
-        Channel channel = connection.createChannel();
-
-        channel.queueDeclare(sendqueueName, false, false, false, null);
-        channel.basicPublish(sendqueueName,"" , null, fm.getBytes()); 
+        Channel channel = connection.createChannel(); 
+        channel.exchangeDeclare(ExchangeName.OUTPUT_GET_CREDITSCORE, "fanout");
+        channel.basicPublish(ExchangeName.OUTPUT_GET_CREDITSCORE,"" , null, fm.getBytes()); 
         
         System.out.println(" [x] Sent '" + fm.toString() + "'");
 
