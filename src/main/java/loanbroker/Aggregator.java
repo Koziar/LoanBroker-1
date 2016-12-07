@@ -35,7 +35,7 @@ public class Aggregator {
  
     
 //   private static final String EXCHANGE_NAME = RoutingKeys.NormulizerInput; 
-   private static final String inputEXCHANGE_NAME = "Kummefryser";
+   private static final String inputEXCHANGE_NAME = "TeamFirebug";
    private static final String outPutEXCHANGE_NAME = "TeamFirebug";
     public static void main(String[] args) throws Exception {
         // TODO code application logic here
@@ -60,21 +60,21 @@ public class Aggregator {
         //Costumer 1
         ag.reciveFromNormalizer(messagesFromBankList,messagesFromNormalizer,foundMessages);
         ag.reciveFromRecieptList(messagesFromBankList);
-        ag.send(m1,"listToAggregator");   
-        ag.send(m1,"normalizerToAggregator");  
-        ag.send(m2,"listToAggregator");   
-        ag.send(m2,"normalizerToAggregator");
-        ag.send(m3,"listToAggregator");   
-        ag.send(m3,"normalizerToAggregator");
+    /*    ag.send(m1,RoutingKeys.Aggregator);   
+        ag.send(m1,RoutingKeys.Aggregator);  
+        ag.send(m2,RoutingKeys.Aggregator);   
+        ag.send(m2,RoutingKeys.Aggregator);
+        ag.send(m3,RoutingKeys.Aggregator);   
+        ag.send(m3,RoutingKeys.Aggregator);
          
          //Costumer 2
-         ag.send(c1,"listToAggregator");   
-        ag.send(c1,"normalizerToAggregator");  
-        ag.send(c2,"listToAggregator");   
-        ag.send(c2,"normalizerToAggregator");
-        ag.send(c3,"listToAggregator");   
-        ag.send(c3,"normalizerToAggregator");
-        
+         ag.send(c1,RoutingKeys.Aggregator);   
+        ag.send(c1,RoutingKeys.Aggregator);  
+        ag.send(c2,RoutingKeys.Aggregator);   
+        ag.send(c2,RoutingKeys.Aggregator);
+        ag.send(c3,RoutingKeys.Aggregator);   
+        ag.send(c3,RoutingKeys.Aggregator);
+       */ 
     }
       private void checkLoanMessages(Hashtable<String, Message> messageBank,Hashtable<String, Message> mn,ArrayList<Message> fm) throws IOException, InterruptedException, TimeoutException, Exception {
          System.out.println("CheckLoan");
@@ -152,7 +152,7 @@ public class Aggregator {
          
     }  
   
-    private void send(entity.Message m,String severity) throws IOException, TimeoutException, InterruptedException
+    private void send(entity.Message m,String routingKey) throws IOException, TimeoutException, InterruptedException
     { 
         ConnectionFactory factory = new ConnectionFactory();
         factory.setHost(hostName);
@@ -171,9 +171,9 @@ public class Aggregator {
                     .correlationId("test1122") 
                     .build();
                     
-        channel.basicPublish(outPutEXCHANGE_NAME, severity, props, fm.getBytes());
+        channel.basicPublish(outPutEXCHANGE_NAME, routingKey, props, fm.getBytes());
        
-        System.out.println(" [x] Sent '" + severity + "':'" + fm + "'");
+        System.out.println(" [x] Sent '"+ outPutEXCHANGE_NAME + routingKey + "':'" + fm + "'");
 
         channel.close();
         connection.close();
@@ -192,14 +192,15 @@ public class Aggregator {
    // channel.exchangeDeclare(inputEXCHANGE_NAME, "direct");
     String queueName = channel.queueDeclare().getQueue();
  
-      channel.queueBind(queueName, inputEXCHANGE_NAME,"normalizerToAggregator"); 
-    System.out.println(" [*] Waiting for messages. To exit press CTRL+C");
+      channel.queueBind(queueName, inputEXCHANGE_NAME, RoutingKeys.NormalizerToAggregator); 
+    System.out.println(" [*] Waiting for messages on "+ inputEXCHANGE_NAME + RoutingKeys.NormalizerToAggregator + ". To exit press CTRL+C");
 
     Consumer consumer = new DefaultConsumer(channel) {
       @Override
       public void handleDelivery(String consumerTag, Envelope envelope,
         AMQP.BasicProperties properties, byte[] body) throws IOException {
         String m = new String(body, "UTF-8");
+            System.out.println("reciveFromNormalizer"+ m);
         String p = properties.getCorrelationId();
         Gson gson = new GsonBuilder().create();
         Message fm = gson.fromJson(m, Message.class);
@@ -236,13 +237,14 @@ public class Aggregator {
    // channel.exchangeDeclare(inputEXCHANGE_NAME, "direct");
     String queueName = channel.queueDeclare().getQueue();
  
-      channel.queueBind(queueName, inputEXCHANGE_NAME, "listToAggregator"); 
-    System.out.println(" [*] Waiting for messages. To exit press CTRL+C");
+      channel.queueBind(queueName, inputEXCHANGE_NAME, RoutingKeys.RecipientListToAggregator); 
+    System.out.println(" [*] Waiting for messages on "+ inputEXCHANGE_NAME + RoutingKeys.RecipientListToAggregator + ".. To exit press CTRL+C");
 
     Consumer consumer = new DefaultConsumer(channel) {
       public void handleDelivery(String consumerTag, Envelope envelope,
                                  AMQP.BasicProperties properties, byte[] body) throws IOException {
         String m = new String(body, "UTF-8");
+          System.out.println("reciveFromRecieptList"+ m);
         String p = properties.getCorrelationId();
            
               Gson gson = new GsonBuilder().create();
@@ -250,7 +252,8 @@ public class Aggregator {
       
               messagesFromBankList.put(p, fm); 
               
-        System.out.println(" [x] Received '" + envelope.getRoutingKey() + "':'" + fm.toString() + "'");
+      //  System.out.println(" [x] Received '" + envelope.getRoutingKey() + "':'" + fm.toString() + "'");
+         System.out.println(" [x] Received '" + envelope.getRoutingKey() + "':'" + m + "'");
         
       }
     };
