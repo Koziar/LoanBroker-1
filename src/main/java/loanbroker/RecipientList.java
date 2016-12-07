@@ -52,7 +52,7 @@ public class RecipientList {
                 Message request = getFromJson(message);
                 if (request.getBanks() != null) {
                     for (Bank bank : request.getBanks()) {
-                        sendMessage(exchangeName,bank.getRoutingKey(), message, corrId);
+                        sendMessage(ExchangeName.GLOBAL,bank.getRoutingKey(), message, corrId);
                         //remember that the component "Get banks" must choose which banks we need to send to(according to credit score)
                     }
                 }

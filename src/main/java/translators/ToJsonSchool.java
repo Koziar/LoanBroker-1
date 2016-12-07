@@ -12,7 +12,7 @@ import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Envelope;
 import com.rabbitmq.client.QueueingConsumer;
 import config.RabbitConnection;
-import config.RoutingKeys;
+import config.*;
 import entity.Bank;
 import entity.Message;
 import java.io.IOException;
@@ -27,7 +27,7 @@ public class ToJsonSchool {
     public static void main(String[] args) throws Exception {
         final String replyQueueName = "replyFromBanks";
         final String EXCHANGE_NAME_SCHOOL = "cphbusiness.bankJSON";
-        final String exchangeName = "TeamFirebug";
+        final String exchangeName = ExchangeName.GLOBAL;
         
         
         RabbitConnection rabbitConnection = new RabbitConnection();
