@@ -12,7 +12,7 @@ import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Envelope;
 import com.rabbitmq.client.QueueingConsumer;
 import config.RabbitConnection;
-import config.RoutingKeys;
+import config.*;
 import entity.Bank;
 import entity.Message;
 import java.io.IOException;
@@ -25,9 +25,9 @@ public class ToJsonSchool {
 
     //use replyQueueName as ' BasicProperties props' for the school rabbitmq  https://www.rabbitmq.com/tutorials/tutorial-six-java.html
     public static void main(String[] args) throws Exception {
-        final String replyQueueName = "replyFromBanks";
+        final String replyQueueName = "teachersJsonReply";
         final String EXCHANGE_NAME_SCHOOL = "cphbusiness.bankJSON";
-        final String exchangeName = "TeamFirebug";
+        final String exchangeName = ExchangeName.GLOBAL;
         
         
         RabbitConnection rabbitConnection = new RabbitConnection();
@@ -70,8 +70,7 @@ public class ToJsonSchool {
                     .replyTo(replyQueueName)
                     .build();
             
-            //!!!change this LoanDuration in Message class, it needs to be a String instead of int!!!
-            String message = gson.toJson(new DtoJsonBank(msg.getSsn(), msg.getCreditScore(), msg.getLoanAmount(), new Integer(msg.getLoanDuration()).toString()));
+            String message = gson.toJson(new DtoJsonBank(msg.getSsn(), msg.getCreditScore(), msg.getLoanAmount(), msg.getLoanDuration()));
             channel.basicPublish(exchangeName, "", props, message.getBytes());
             rabbitConnection.closeChannelAndConnection();
             System.out.println(" [x] Sent :" + msg.toString() + "");
