@@ -115,7 +115,7 @@ public class Aggregator {
                 }
                 Message bestMessage = new Message("", 0, 0, "");
                 System.out.println("Checking if all messages from the banks are recived.");
-                if (finalMessages.size() == 2) {
+                if (finalMessages.size() == y.getBanks().size()) {
                     System.out.println("Finding the best creditscore");
                     for (int o = 0; o < finalMessages.size(); o++) {
 
@@ -155,8 +155,7 @@ public class Aggregator {
         channel.exchangeDeclare(ExchangeName.GLOBAL, "direct");
 
         Gson gson = new GsonBuilder().create();
-        String fm = gson.toJson(m);
-        String corrId = java.util.UUID.randomUUID().toString();
+        String fm = gson.toJson(m); 
         BasicProperties props = new BasicProperties.Builder()
                 .build();
 
@@ -191,7 +190,7 @@ public class Aggregator {
                 String m = new String(body, "UTF-8");
                 System.out.println("reciveFromNormalizer" + m);
                  String p = properties.getCorrelationId();
-                //String p = "hej";
+                if(p != null){
                 Gson gson = new GsonBuilder().create();
                 LoanResponse lp = gson.fromJson(m, LoanResponse.class);
                 Message fm = new Message(""+lp.getSsn(), (int) lp.getInterestRate(), 0, lp.getBank());
@@ -208,6 +207,11 @@ public class Aggregator {
                 } catch (Exception ex) {
                     Logger.getLogger(Aggregator.class.getName()).log(Level.SEVERE, null, ex);
                 }
+                }
+                else
+                  {
+                      System.out.println("No correlationId");
+                  }  
             }
         };
         channel.basicConsume(queueName, true, consumer);
@@ -234,7 +238,7 @@ public class Aggregator {
                 String m = new String(body, "UTF-8");
                 System.out.println("reciveFromRecieptList" + m);
                 String p = properties.getCorrelationId();
-
+                if(p != null){
                 //send to translator
                  Gson g = new Gson(); 
                 Message fm = g.fromJson(m, Message.class);
@@ -248,7 +252,12 @@ public class Aggregator {
 
                 System.out.println(" [x] Received '" + envelope.getRoutingKey() + "':'" + fm.toString() + "'");
                 //   System.out.println(" [x] Received '" + envelope.getRoutingKey() + "':'" + m + "'");
-
+                 }
+                else
+                   {
+                      System.out.println("No correlationId");
+                  }    
+                    
             }
         };
         channel.basicConsume(queueName, true, consumer);
