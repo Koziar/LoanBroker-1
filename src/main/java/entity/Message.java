@@ -23,7 +23,8 @@ public class Message {
         this.creditScore = creditScore;
         this.loanAmount = loanAmount;
         this.loanDuration = loanDuration;
-    }
+        
+    } 
 
     public String getSsn() {
         return ssn;
