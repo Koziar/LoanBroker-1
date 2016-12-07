@@ -14,15 +14,15 @@ import java.util.logging.Logger;
  */
 public class RabbitConnection {
 
-    private String host = "localhost";
+  /*  private String host = "localhost";
     private String userName = "";
     private String password = "";
     private Integer port = 0;
-    /*private String host = "datdb.cphbusiness.dk";
+    */ private String host = "datdb.cphbusiness.dk";
     private String userName = "student";
     private String password = "cph";
     private Integer port = 5672; 
-    */
+   
     private boolean localhost = true;
    
     private Channel channel;

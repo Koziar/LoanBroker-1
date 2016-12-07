@@ -19,8 +19,9 @@ public class RoutingKeys {
     public static final String TranslatorThree = "TranslatorThree";
     public static final String TranslatorFour = "TranslatorFour";
     public static final String NormulizerInput = "Normalizer";
-    public static final String Aggregator = "Aggregator";
-    public static final String result = "result";
+    public static final String RecipientListToAggregator = "recipientlistToAggregator";
+    public static final String NormalizerToAggregator = "normalizerToAggregator";
+    public static final String Result = "result";
     //Routing keys
     
 }
