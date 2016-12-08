@@ -10,7 +10,7 @@ package config;
  * @author joachim
  */
 public class RoutingKeys {
-    
+
     //Queue names
     public static final String GetBanksInput = "GetBanksInput";
     public static final String RecipientListInput = "RecipientListInput";
@@ -22,6 +22,10 @@ public class RoutingKeys {
     public static final String RecipientListToAggregator = "recipientlistToAggregator";
     public static final String NormalizerToAggregator = "normalizerToAggregator";
     public static final String Result = "result";
-    //Routing keys
-    
+
+    //Routing keys  
+    public static final String SCHOOL_JSON_BANK = "keyBankJSON";
+    public static final String SCHOOL_XML_BANK = "keyBankXML";
+    public static final String OUR_JSON_BANK = "ourRabbitBankKey";
+    public static final String OUR_XML_BANK = "OurSoapXmlBank";
 }
