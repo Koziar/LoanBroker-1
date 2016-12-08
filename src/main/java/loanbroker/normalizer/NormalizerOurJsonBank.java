@@ -5,10 +5,78 @@
  */
 package loanbroker.normalizer;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.rabbitmq.client.Channel;
+import com.rabbitmq.client.Connection;
+import com.rabbitmq.client.ConnectionFactory;
+import com.rabbitmq.client.QueueingConsumer;
+import config.ExchangeName;
+import config.RoutingKeys;
+import dto.DtoTeachersXmlBank;
+import entity.LoanResponse;
+import java.io.IOException;
+import java.io.StringReader;
+import java.util.concurrent.TimeoutException;
+import javax.xml.bind.JAXB;
+import org.json.JSONObject;
+
 /**
  *
  * @author Jonathan
  */
 public class NormalizerOurJsonBank {
-    
+
+    private static final String EXCHANGE_NAME = ExchangeName.OUR_JSON_BANK_RESPONSE;
+    private static final String RPC_QUEUE_NAME = "ourJsonReply";
+
+    public static void main(String[] args) {
+        try {
+            ConnectionFactory factory = new ConnectionFactory();
+            factory.setHost("datdb.cphbusiness.dk");
+            factory.setPort(5672);
+            factory.setUsername("student");
+            factory.setPassword("cph");
+            Connection connection = factory.newConnection();
+            Channel channel = connection.createChannel();
+ 
+            channel.exchangeDeclare(EXCHANGE_NAME, "fanout");
+            channel.queueDeclare(RPC_QUEUE_NAME,false, false, false, null);
+            System.out.println(" [*] Waiting for messages. To exit press CTRL+C");
+
+            QueueingConsumer consumer = new QueueingConsumer(channel);
+            channel.basicConsume(RPC_QUEUE_NAME, true, consumer);
+            
+            //producer 
+            Channel channelOutput = connection.createChannel();
+            channelOutput.exchangeDeclare(ExchangeName.GLOBAL, "direct");
+            String queueName = channelOutput.queueDeclare().getQueue();
+            channelOutput.queueBind(queueName, EXCHANGE_NAME, RoutingKeys.NormalizerToAggregator);
+
+            LoanResponse loanResponse;
+            while (true) {
+                System.out.println("Reading");
+                QueueingConsumer.Delivery delivery = consumer.nextDelivery();
+                System.out.println("CorrelationId: " + delivery.getProperties().getCorrelationId());
+
+                String message = new String(delivery.getBody());
+
+                JSONObject jsonObj = new JSONObject(message);
+
+                loanResponse = new LoanResponse(jsonObj.getInt("ssn"), jsonObj.getDouble("interestRate"), "Teachers Json Bank", delivery.getProperties().getCorrelationId());
+                System.out.println("renter: " + loanResponse.getInterestRate());
+                System.out.println("ssn: " + loanResponse.getSsn());
+                System.out.println("bank : " + loanResponse.getBank());
+                System.out.println("JSON:" + loanResponse);
+                System.out.println("TOstring:" + jsonObj.toString());
+                Gson g = new Gson();
+                String fm = g.toJson(loanResponse);
+                channelOutput.basicPublish(ExchangeName.GLOBAL, RoutingKeys.NormalizerToAggregator, null, fm.getBytes());
+
+            }
+
+        } catch (IOException | TimeoutException | InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
 }

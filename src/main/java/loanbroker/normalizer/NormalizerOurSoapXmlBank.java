@@ -3,8 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
- package loanbroker.normalizer;
-
+package loanbroker.normalizer;
 
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
@@ -37,7 +36,7 @@ public class NormalizerOurSoapXmlBank {
         //Consumer
         channel.exchangeDeclare(EXCHANGE_NAME, "direct");
         String queueName = channel.queueDeclare().getQueue();
-       //s channel.queueBind(queueName, EXCHANGE_NAME, "OurSoapXmlBank");
+        //s channel.queueBind(queueName, EXCHANGE_NAME, "OurSoapXmlBank");
         channel.queueBind(queueName, EXCHANGE_NAME, "info");
         QueueingConsumer consumer = new QueueingConsumer(channel);
         channel.basicConsume(queueName, true, consumer);
@@ -46,9 +45,6 @@ public class NormalizerOurSoapXmlBank {
         //Producer
         Channel channelOutput = connection.createChannel();
         channelOutput.exchangeDeclare(EXCHANGE_NAME, "direct");
-       
-
-        
 
         while (true) {
             QueueingConsumer.Delivery delivery = consumer.nextDelivery();
@@ -56,14 +52,14 @@ public class NormalizerOurSoapXmlBank {
             String routingKey = delivery.getEnvelope().getRoutingKey();
 
             DtoOurSoapXmlBank dtoOurSoapXmlBank = JAXB.unmarshal(new StringReader(message), DtoOurSoapXmlBank.class);
-            LoanResponse loanResponse = new LoanResponse(dtoOurSoapXmlBank.getSsn(), dtoOurSoapXmlBank.getInterestRate(),"", delivery.getProperties().getCorrelationId());
+            LoanResponse loanResponse = new LoanResponse(dtoOurSoapXmlBank.getSsn(), dtoOurSoapXmlBank.getInterestRate(), "", delivery.getProperties().getCorrelationId());
             // loanResponse.setBank(routingKey);
 
             System.out.println("renter: " + loanResponse.getInterestRate());
             System.out.println("ssn: " + loanResponse.getSsn());
             System.out.println("bank : " + loanResponse.getBank());
             JSONObject jsonObj = new JSONObject(loanResponse);
-           // channelOutput.basicPublish("", RoutingKeys.Aggregator, null, jsonObj.toString().getBytes());
+            // channelOutput.basicPublish("", RoutingKeys.Aggregator, null, jsonObj.toString().getBytes());
             channelOutput.basicPublish("sendtoAggre2", "info", null, jsonObj.toString().getBytes());
         }
     }
