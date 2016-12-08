@@ -55,9 +55,10 @@ public class OurRabbitBank {
         try {
             Gson g = new Gson();
             ConnectionFactory factory = new ConnectionFactory();
+            factory.setHost("datdb.cphbusiness.dk");
             Connection connection = factory.newConnection();
             Channel channel = connection.createChannel();
-            channel.exchangeDeclare(ExchangeName.OUR_JSON_BANK_RESPONSE, "direct");
+            //channel.exchangeDeclare(ExchangeName.OUR_JSON_BANK_RESPONSE, "direct");
 
             int ssn = Integer.valueOf(msg.getSsn());
             double interestRate = calcRate();
