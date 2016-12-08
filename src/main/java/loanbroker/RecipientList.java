@@ -82,7 +82,7 @@ public class RecipientList {
             channel.exchangeDeclare(exchangeName, "direct");
             channel.basicPublish(exchangeName, routingKey, props, msg.getBytes("UTF-8"));
             rabbitConnection.closeChannelAndConnection();
-            System.out.println(" [x] Sent :" + msg + "");
+            System.out.println(" [x] Sent :" + routingKey + " " + msg + "");
         } catch (IOException ex) {
             System.out.println("Error in RecipientList class - sendToTranslator()");
             System.out.println(ex.getStackTrace());
