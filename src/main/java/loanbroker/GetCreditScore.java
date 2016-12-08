@@ -70,7 +70,7 @@ public class GetCreditScore {
                Gson gson = new GsonBuilder().create();
                 Message fm = gson.fromJson(m, Message.class);
               int creditScore  = creditScore(fm.getSsn());
-                fm.setCreditScore(800);
+                fm.setCreditScore(creditScore);
                 fm.setSsn(fm.getSsn().replace("-", ""));
                 send(fm);
                  

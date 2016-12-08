@@ -59,22 +59,27 @@ public class Aggregator {
         System.out.println("CheckLoan");
 
         Iterator<Map.Entry<String, Message>> mb = messageBank.entrySet().iterator();
-
+        String key = "";
         while (mb.hasNext()) {
             Map.Entry<String, Message> entryMB = mb.next();
             if (mn.get(entryMB.getKey()) != null) {
                 mn.get(entryMB.getKey()).setBanks(entryMB.getValue().getBanks());
                 fm.add(mn.get(entryMB.getKey()));
-                mn.remove(mn.get(entryMB.getKey()));
-                messageBank.remove(mn.get(entryMB.getKey()));
+                mn.remove(mn.get(entryMB.getKey()));  
             }
         }
-
-        //findBest(fm);
+        
+         for (int k = 0; k < fm.size(); k++) {
+             System.out.println("LOAN:"+fm.get(k));
+             
+         }
+       
+        
+         findBest(fm,messageBank,key);
 
     }
 
-    private void findBest(ArrayList<Message> messages) throws Exception {
+    private void findBest(ArrayList<Message> messages, Hashtable<String, Message> messageBank, String key) throws Exception {
         System.out.println("findBest");
 
         System.out.println("Loops through the messsages in the message array. ");
@@ -95,7 +100,7 @@ public class Aggregator {
                 Message bestMessage = new Message("", 0, 0, "");
                 System.out.println("Checking if all messages from the banks are recived.");
                 System.out.println(""+finalMessages.size()+" - "+y.getBanks().size()+"");
-                if (finalMessages.size() == 2) {
+                if (finalMessages.size() == y.getBanks().size()) {
                     System.out.println("Finding the best creditscore");
                     for (int o = 0; o < finalMessages.size(); o++) {
 
@@ -110,8 +115,10 @@ public class Aggregator {
                 if (bestMessage.getSsn() != "") {
                     System.out.println("Sending the message thought Rabbitmq.");
                     send(bestMessage, RoutingKeys.Result);
-                    finalMessages.remove(bestMessage);
-                    messages.remove(bestMessage);
+                    finalMessages.removeAll(messages);
+                    messages.removeAll(messages);
+                    messageBank.remove(key);
+                    
                     bestMessage.setSsn("");
 
                 } else {
@@ -121,6 +128,7 @@ public class Aggregator {
             }
 
         }
+      
 
     }
 
@@ -180,7 +188,7 @@ public class Aggregator {
                 messagesFromNormalizer.put(lp.getCorrelationId(), fm);
 
                 System.out.println(" [x] Received '" + envelope.getRoutingKey() + "':'" + fm.toString() + "'");
-                try {
+                 try {
                     checkLoanMessages(messageFroumBankList, messagesFromNormalizer, foundMessages);
                 } catch (InterruptedException ex) {
                     Logger.getLogger(Aggregator.class.getName()).log(Level.SEVERE, null, ex);
@@ -189,7 +197,7 @@ public class Aggregator {
                 } catch (Exception ex) {
                     Logger.getLogger(Aggregator.class.getName()).log(Level.SEVERE, null, ex);
                 }
-                 
+                
             }
         };
         channel.basicConsume(queueName, true, consumer);
@@ -214,7 +222,7 @@ public class Aggregator {
             public void handleDelivery(String consumerTag, Envelope envelope,
                     AMQP.BasicProperties properties, byte[] body) throws IOException {
                 String m = new String(body, "UTF-8");
-                System.out.println("reciveFromRecieptList" + m);
+               // System.out.println("reciveFromRecieptList" + m);
                 String p = properties.getCorrelationId();
                 if(p != null){
                 //send to translator
