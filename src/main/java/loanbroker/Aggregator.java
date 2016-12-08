@@ -100,7 +100,7 @@ public class Aggregator {
                 Message bestMessage = new Message("", 0, 0, "");
                 System.out.println("Checking if all messages from the banks are recived.");
                 System.out.println(""+finalMessages.size()+" - "+y.getBanks().size()+"");
-                if (finalMessages.size() == 2) {
+                if (finalMessages.size() == y.getBanks().size()) {
                     System.out.println("Finding the best creditscore");
                     for (int o = 0; o < finalMessages.size(); o++) {
 
