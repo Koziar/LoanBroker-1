@@ -85,19 +85,19 @@ public class ToOurXmlBank {
 //        }
 
         try { // Call Web Service Operation
-            services.LoanResponseService_Service service = new services.LoanResponseService_Service();
-            services.LoanResponseService port = service.getLoanResponseServicePort();
+//            services.LoanResponseService_Service service = new services.LoanResponseService_Service();
+//            services.LoanResponseService port = service.getLoanResponseServicePort();
             // TODO initialize WS operation arguments here
-            int ssn = Integer.valueOf(msg.getSsn());
-            int creditScore = msg.getCreditScore();
-            double loanAmount = msg.getLoanAmount();
-
-            GregorianCalendar c = GregorianCalendar.from((LocalDate.parse(msg.getLoanDuration())).atStartOfDay(ZoneId.systemDefault()));
-            XMLGregorianCalendar loanDuration = DatatypeFactory.newInstance().newXMLGregorianCalendar(c);
-            java.lang.String responseQueue = "";
-
-            boolean result = port.loanResponse(ssn, creditScore, loanAmount, loanDuration, responseQueue);
-            System.out.println("Result = " + result);
+//            int ssn = Integer.valueOf(msg.getSsn());
+//            int creditScore = msg.getCreditScore();
+//            double loanAmount = msg.getLoanAmount();
+//
+//            GregorianCalendar c = GregorianCalendar.from((LocalDate.parse(msg.getLoanDuration())).atStartOfDay(ZoneId.systemDefault()));
+//            XMLGregorianCalendar loanDuration = DatatypeFactory.newInstance().newXMLGregorianCalendar(c);
+//            java.lang.String responseQueue = "";
+//
+//            boolean result = port.loanResponse(ssn, creditScore, loanAmount, loanDuration, responseQueue);
+//            System.out.println("Result = " + result);
         } catch (Exception ex) {
             // TODO handle custom exceptions here
         }

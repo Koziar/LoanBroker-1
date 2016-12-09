@@ -69,7 +69,7 @@ public class OurRabbitBank {
             
             String res = g.toJson(response);
 
-            channel.basicPublish(ExchangeName.OUR_JSON_BANK_RESPONSE, "ourJsonReply", props, res.getBytes());
+            channel.basicPublish(ExchangeName.OUR_JSON_BANK_RESPONSE, "", props, res.getBytes());
 
             System.out.println(" [x] Sent '" + res + "'");
             

@@ -28,7 +28,7 @@ import org.json.JSONObject;
 public class NormalizerOurJsonBank {
 
     private static final String EXCHANGE_NAME = ExchangeName.OUR_JSON_BANK_RESPONSE;
-    private static final String RPC_QUEUE_NAME = "ourJsonReply";
+    //private static final String RPC_QUEUE_NAME = "ourJsonReply";
 
     public static void main(String[] args) {
         try {
@@ -41,18 +41,20 @@ public class NormalizerOurJsonBank {
             Channel channel = connection.createChannel();
  
             channel.exchangeDeclare(EXCHANGE_NAME, "fanout");
-            channel.queueDeclare(RPC_QUEUE_NAME,false, false, false, null);
+            String queueName = channel.queueDeclare().getQueue();
+           channel.queueBind(queueName, EXCHANGE_NAME, "");
+            //channel.queueDeclare(RPC_QUEUE_NAME,false, false, false, null);
             System.out.println(" [*] Waiting for messages. To exit press CTRL+C");
 
             QueueingConsumer consumer = new QueueingConsumer(channel);
-            channel.basicConsume(RPC_QUEUE_NAME, true, consumer);
+            channel.basicConsume(queueName, true, consumer);
             
             //producer 
             Channel channelOutput = connection.createChannel();
             channelOutput.exchangeDeclare(ExchangeName.GLOBAL, "direct");
-            String queueName = channelOutput.queueDeclare().getQueue();
-            channelOutput.queueBind(queueName, EXCHANGE_NAME, RoutingKeys.NormalizerToAggregator);
-
+            String queueNameProducer = channelOutput.queueDeclare().getQueue();
+            channelOutput.queueBind(queueNameProducer, ExchangeName.GLOBAL, RoutingKeys.NormalizerToAggregator);
+                
             LoanResponse loanResponse;
             while (true) {
                 System.out.println("Reading");
@@ -63,7 +65,7 @@ public class NormalizerOurJsonBank {
 
                 JSONObject jsonObj = new JSONObject(message);
 
-                loanResponse = new LoanResponse(jsonObj.getInt("ssn"), jsonObj.getDouble("interestRate"), "Teachers Json Bank", delivery.getProperties().getCorrelationId());
+                loanResponse = new LoanResponse(jsonObj.getInt("ssn"), Math.ceil(jsonObj.getDouble("interestRate")), "Our Json Bank", delivery.getProperties().getCorrelationId());
                 System.out.println("renter: " + loanResponse.getInterestRate());
                 System.out.println("ssn: " + loanResponse.getSsn());
                 System.out.println("bank : " + loanResponse.getBank());

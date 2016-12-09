@@ -11,6 +11,7 @@ import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
 import com.rabbitmq.client.QueueingConsumer;
+import config.ExchangeName;
 import config.RoutingKeys;
 import dto.DtoTeachersXmlBank;
 import entity.LoanResponse;
@@ -49,9 +50,9 @@ public class NormalizerTeachersJsonBank {
             channel.basicConsume(RPC_QUEUE_NAME, true, consumer);
             //producer 
             Channel channelOutput = connection.createChannel();
-            channelOutput.exchangeDeclare("TeamFirebug", "direct");
+            channelOutput.exchangeDeclare(ExchangeName.GLOBAL, "direct");
             String queueName = channelOutput.queueDeclare().getQueue();
-            channelOutput.queueBind(queueName, EXCHANGE_NAME, "normalizerToAggregator");
+            channelOutput.queueBind(queueName, ExchangeName.GLOBAL, "normalizerToAggregator");
 
             LoanResponse loanResponse;
             while (true) {
