@@ -71,7 +71,7 @@ public class ToOurXmlBank {
         channel.exchangeDeclare(exchangeName, "direct");
         String queueName = channel.queueDeclare().getQueue();
 
-        channel.queueBind(queueName, exchangeName, "ourBankXML");
+        channel.queueBind(queueName, exchangeName, "ourBankSoapXML");
 
         //get banks from queue. "Get banks" component
         QueueingConsumer consumer = new QueueingConsumer(channel) {
