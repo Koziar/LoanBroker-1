@@ -4,4 +4,6 @@
     <system systemId="http://139.59.154.97:8080/CreditScoreService/CreditScoreService?xsd=1" uri="wsdl/139.59.154.97_8080/CreditScoreService/CreditScoreService.xsd_1.xsd"/>
     <system systemId="http://rulebase-testnikolai1.rhcloud.com/RuleBase/RuleBase?wsdl" uri="wsdl/rulebase-testnikolai1.rhcloud.com/RuleBase/RuleBase.wsdl"/>
     <system systemId="http://rulebase-testnikolai1.rhcloud.com:80/RuleBase/RuleBase?xsd=1" uri="wsdl/rulebase-testnikolai1.rhcloud.com_80/RuleBase/RuleBase.xsd_1.xsd"/>
+    <system systemId="http://rulebase-testnikolai1.rhcloud.com/SoapXmlBank/LoanResponseService?wsdl" uri="wsdl/rulebase-testnikolai1.rhcloud.com/SoapXmlBank/LoanResponseService.wsdl"/>
+    <system systemId="http://rulebase-testnikolai1.rhcloud.com:80/SoapXmlBank/LoanResponseService?xsd=1" uri="wsdl/rulebase-testnikolai1.rhcloud.com_80/SoapXmlBank/LoanResponseService.xsd_1.xsd"/>
 </catalog>

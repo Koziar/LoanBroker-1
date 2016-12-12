@@ -8,6 +8,8 @@ package translators;
 import com.google.gson.Gson;
 import com.rabbitmq.client.AMQP;
 import com.rabbitmq.client.Channel;
+import com.rabbitmq.client.Connection;
+import com.rabbitmq.client.ConnectionFactory;
 import com.rabbitmq.client.Envelope;
 import com.rabbitmq.client.QueueingConsumer;
 import config.ExchangeName;
@@ -18,6 +20,7 @@ import java.io.StringWriter;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.GregorianCalendar;
+import java.util.concurrent.TimeoutException;
 import javax.lang.model.element.Element;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
@@ -32,19 +35,43 @@ import javax.xml.datatype.XMLGregorianCalendar;
  */
 public class ToOurXmlBank {
 
-    public static void main(String[] args) throws IOException {
-        //final String replyQueueName = "replyFromBanks";
-        final String replyQueueName = "ourXmlReply";
-        final String EXCHANGE_NAME_SCHOOL = "cphbusiness.bankXML";
-        final String exchangeName = ExchangeName.GLOBAL;
+    final static String EXCHANGE_NAME_SCHOOL = "cphbusiness.webserviceXml";
+    final static String exchangeName = "TeamFirebug";
+    final static String replyQueueName = "teamFirebugsSoapxmlBankResponse";
 
-        RabbitConnection rabbitConnection = new RabbitConnection();
+    private static Message getFromJson(String json) {
+        System.out.println(json);
+        Gson g = new Gson();
+        return g.fromJson(json, Message.class);
+    }
 
-        Channel channel = rabbitConnection.makeConnection();
+    private static void connectToWebService(Message msg, String corrId, String exchangeName, String replyQueueName) {
+        try { // Call Web Service Operation
+            services.LoanResponseService_Service service = new services.LoanResponseService_Service();
+            services.LoanResponseService port = service.getLoanResponseServicePort();
+            // TODO initialize WS operation arguments here
+
+            // TODO process result here
+            int ssnMsg = Integer.parseInt(msg.getSsn());
+            boolean result = port.loanResponse(ssnMsg, msg.getCreditScore(), msg.getLoanAmount(), null, replyQueueName, corrId);
+            System.out.println("Result = " + result);
+        } catch (Exception ex) {
+            System.out.println(ex);
+            // TODO handle custom exceptions here
+        }
+    }
+
+    public static void main(String[] args) throws IOException, TimeoutException {
+
+        ConnectionFactory factory = new ConnectionFactory();
+        factory.setHost("datdb.cphbusiness.dk");
+        Connection connection = factory.newConnection();
+        Channel channel = connection.createChannel();
+
         channel.exchangeDeclare(exchangeName, "direct");
         String queueName = channel.queueDeclare().getQueue();
 
-        channel.queueBind(queueName, exchangeName, "keyBankXML");
+        channel.queueBind(queueName, exchangeName, "ourBankXML");
 
         //get banks from queue. "Get banks" component
         QueueingConsumer consumer = new QueueingConsumer(channel) {
@@ -52,87 +79,12 @@ public class ToOurXmlBank {
             public void handleDelivery(String consumerTag, Envelope envelope, AMQP.BasicProperties properties, byte[] body) throws IOException {
                 String message = new String(body, "UTF-8");
                 Message messageFromJson = getFromJson(message);
-                sendMsgToBank(messageFromJson, properties.getCorrelationId(), EXCHANGE_NAME_SCHOOL, replyQueueName);
+                connectToWebService(messageFromJson, properties.getCorrelationId(), EXCHANGE_NAME_SCHOOL, replyQueueName);
+
             }
         };
         channel.basicConsume(queueName, true, consumer);
-    }
-
-    private static Message getFromJson(String json) {
-        Gson g = new Gson();
-        return g.fromJson(json, Message.class);
-    }
-
-    private static void sendMsgToBank(Message msg, String corrId, String exchangeName, String replyQueueName) {
-//        Gson gson = new Gson();
-//        RabbitConnection rabbitConnection = new RabbitConnection();
-//        Channel channel = rabbitConnection.makeConnection();
-//        try {
-//            channel.exchangeDeclare(exchangeName, "fanout");
-//
-//            AMQP.BasicProperties props = new AMQP.BasicProperties.Builder()
-//                    .correlationId(corrId)
-//                    .replyTo(replyQueueName)
-//                    .build();
-//
-//            String message = makeXmlString(msg);
-//            channel.basicPublish(exchangeName, "", props, message.getBytes());
-//            rabbitConnection.closeChannelAndConnection();
-//            System.out.println(" [x] Sent :" + msg.toString() + "");
-//        } catch (IOException ex) {
-//            System.out.println("Error in ToXmlSchool class - sendMsgToBank()");
-//            System.out.println(ex.getStackTrace());
-//        }
-
-        try { // Call Web Service Operation
-//            services.LoanResponseService_Service service = new services.LoanResponseService_Service();
-//            services.LoanResponseService port = service.getLoanResponseServicePort();
-            // TODO initialize WS operation arguments here
-//            int ssn = Integer.valueOf(msg.getSsn());
-//            int creditScore = msg.getCreditScore();
-//            double loanAmount = msg.getLoanAmount();
-//
-//            GregorianCalendar c = GregorianCalendar.from((LocalDate.parse(msg.getLoanDuration())).atStartOfDay(ZoneId.systemDefault()));
-//            XMLGregorianCalendar loanDuration = DatatypeFactory.newInstance().newXMLGregorianCalendar(c);
-//            java.lang.String responseQueue = "";
-//
-//            boolean result = port.loanResponse(ssn, creditScore, loanAmount, loanDuration, responseQueue);
-//            System.out.println("Result = " + result);
-        } catch (Exception ex) {
-            // TODO handle custom exceptions here
-        }
 
     }
 
-    /**
-     *
-     * @param msg
-     * @return a string of xml type LoanRequest class. if error returns null
-     */
-    private static String makeXmlString(Message msg) {
-        LoanRequest dto = new LoanRequest();
-        dto.setSsn(msg.getSsn());
-        dto.setCreditScore(msg.getCreditScore());
-        dto.setLoanAmount(msg.getLoanAmount());
-        //!!!change this LoanDuration in Message class, it needs to be a String instead of int!!! because we need this format '1973-01-01 01:00:00.0 CET'
-        dto.setLoanDuration(msg.getLoanDuration());
-
-        try {
-            JAXBContext jaxbContext = JAXBContext.newInstance(LoanRequest.class);
-            Marshaller jaxbMarshaller = jaxbContext.createMarshaller();
-            jaxbMarshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
-
-            //xml to string
-            StringWriter sw = new StringWriter();
-            jaxbMarshaller.marshal(dto, sw);
-            String xmlString = sw.toString();
-
-            return xmlString;
-
-        } catch (JAXBException e) {
-            e.printStackTrace();
-            System.out.println("!!!!!Error in class - ToXmlSchool - makeXmlString()");
-        }
-        return null;
-    }
 }

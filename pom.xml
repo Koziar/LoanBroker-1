@@ -61,6 +61,24 @@
                         <id>wsimport-generate-RuleBase</id>
                         <phase>generate-sources</phase>
                     </execution>
+                    <execution>
+                        <goals>
+                            <goal>wsimport</goal>
+                        </goals>
+                        <configuration>
+                            <wsdlFiles>
+                                <wsdlFile>rulebase-testnikolai1.rhcloud.com/SoapXmlBank/LoanResponseService.wsdl</wsdlFile>
+                            </wsdlFiles>
+                            <packageName></packageName>
+                            <vmArgs>
+                                <vmArg>-Djavax.xml.accessExternalSchema=all</vmArg>
+                            </vmArgs>
+                            <wsdlLocation>http://rulebase-testnikolai1.rhcloud.com/SoapXmlBank/LoanResponseService?wsdl</wsdlLocation>
+                            <staleFile>${project.build.directory}/jaxws/stale/LoanResponseService.stale</staleFile>
+                        </configuration>
+                        <id>wsimport-generate-LoanResponseService</id>
+                        <phase>generate-sources</phase>
+                    </execution>
                 </executions>
                 <dependencies>
                     <dependency>

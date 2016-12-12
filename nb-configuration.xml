@@ -15,5 +15,6 @@ Any value defined here will override the pom.xml file value but is only applicab
 -->
         <org-netbeans-modules-maven-jaxws._5f_C_5f_CreditScoreService>http://139.59.154.97:8080/CreditScoreService/CreditScoreService?wsdl</org-netbeans-modules-maven-jaxws._5f_C_5f_CreditScoreService>
         <org-netbeans-modules-maven-jaxws._5f_C_5f_RuleBase>http://rulebase-testnikolai1.rhcloud.com/RuleBase/RuleBase?wsdl</org-netbeans-modules-maven-jaxws._5f_C_5f_RuleBase>
+        <org-netbeans-modules-maven-jaxws._5f_C_5f_LoanResponseService>http://rulebase-testnikolai1.rhcloud.com/SoapXmlBank/LoanResponseService?wsdl</org-netbeans-modules-maven-jaxws._5f_C_5f_LoanResponseService>
     </properties>
 </project-shared-configuration>
