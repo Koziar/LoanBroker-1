@@ -10,6 +10,7 @@ import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
 import com.rabbitmq.client.QueueingConsumer;
 import dto.DtoOurSoapXmlBank;
+import dto.DtoTeachersXmlBank;
 import entity.LoanResponse;
 import java.io.IOException;
 import java.io.StringReader;
@@ -54,7 +55,7 @@ public class NormalizerTeachersXmlBank {
             String message = new String(delivery.getBody());
             String routingKey = delivery.getEnvelope().getRoutingKey();
 
-            DtoOurSoapXmlBank dtoOurSoapXmlBank = JAXB.unmarshal(new StringReader(message), DtoOurSoapXmlBank.class);
+            DtoTeachersXmlBank dtoOurSoapXmlBank = JAXB.unmarshal(new StringReader(message), DtoTeachersXmlBank.class);
             LoanResponse loanResponse = new LoanResponse(dtoOurSoapXmlBank.getSsn(), dtoOurSoapXmlBank.getInterestRate(), "Teachers Xml Bank",delivery.getProperties().getCorrelationId());
             // loanResponse.setBank(routingKey);
             System.out.println("CorrelationId: " + delivery.getProperties().getCorrelationId());
